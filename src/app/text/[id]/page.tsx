@@ -41,7 +41,7 @@ export default function Text() {
 
   const goBelow = () => {
     if (belowRef.current) {
-      belowRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      belowRef.current.scrollTop = belowRef.current.scrollHeight
     }
   }
 
