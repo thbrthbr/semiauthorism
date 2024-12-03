@@ -51,16 +51,19 @@ export default function Home() {
     const fileRef = ref(storage, `texts/${fileName}.txt`)
     await uploadBytes(fileRef, file).then(async (snapshot) => {
       getDownloadURL(snapshot.ref).then(async (downUrl) => {
-        const brought = await fetch('http://localhost:3000/api/text', {
-          method: 'POST',
-          body: JSON.stringify({
-            title: fileName,
-            path: downUrl,
-            order: Date.now(),
-            realTitle: fileName,
-          }),
-          cache: 'no-store',
-        })
+        const brought = await fetch(
+          `${process.env.NEXT_PUBLIC_SITE}/api/text`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              title: fileName,
+              path: downUrl,
+              order: Date.now(),
+              realTitle: fileName,
+            }),
+            cache: 'no-store',
+          },
+        )
         const final = await brought.json()
         const semi = datas.slice(0)
         semi.push(final.data)
@@ -70,7 +73,7 @@ export default function Home() {
   }
 
   const getWritten = async () => {
-    const result = await fetch('http://localhost:3000/api/text', {
+    const result = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/text`, {
       method: 'GET',
       cache: 'no-store',
     })
@@ -85,13 +88,16 @@ export default function Home() {
   const deleteWritten = async (id: string) => {
     const willYou = window.confirm('해당 텍스트를 삭제하시겠습니까')
     if (willYou) {
-      const res = await fetch('http://localhost:3000/api/text/delete', {
-        method: 'DELETE',
-        body: JSON.stringify({
-          id,
-        }),
-        cache: 'no-store',
-      })
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE}/api/text/delete`,
+        {
+          method: 'DELETE',
+          body: JSON.stringify({
+            id,
+          }),
+          cache: 'no-store',
+        },
+      )
       const final = await res.json()
       if (final.message == '삭제 성공') {
         const temp = []
@@ -106,7 +112,7 @@ export default function Home() {
   }
 
   const editTitle = async (id: string, newTitle: string) => {
-    await fetch('http://localhost:3000/api/text/edit-title', {
+    await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/text/edit-title`, {
       method: 'POST',
       body: JSON.stringify({
         id,

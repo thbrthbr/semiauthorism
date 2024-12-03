@@ -13,10 +13,13 @@ export default function Text() {
 
   const getContent = async () => {
     if (param) {
-      const result = await fetch(`http://localhost:3000/api/text/${param.id}`, {
-        method: 'GET',
-        cache: 'no-store',
-      })
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE}/api/text/${param.id}`,
+        {
+          method: 'GET',
+          cache: 'no-store',
+        },
+      )
       const final = await result.json()
       const path = final.data[0].path
       const response = await fetch(path)
