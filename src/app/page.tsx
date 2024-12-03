@@ -133,7 +133,7 @@ export default function Home() {
   }, [isOpened])
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="bg-black flex flex-col items-center justify-center">
       {isOpened ? (
         <div>
           <div className="flex m-8 gap-8 flex-wrap">

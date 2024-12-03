@@ -53,7 +53,7 @@ export default function Text() {
         onChange={(e) => {
           setContent(e.target.value)
         }}
-        className="h-screen outline-none bg-black m-4"
+        className="h-screen outline-none bg-black m-4 text-white"
       ></textarea>
     </div>
   )
