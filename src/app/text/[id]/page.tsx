@@ -1,13 +1,14 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ref, uploadString } from 'firebase/storage'
 import { storage } from '@/firebase/firebaseConfig'
 
 export default function Text() {
   const router = useRouter()
   const param = useParams()
+  const belowRef = useRef<any>(null)
   const [content, setContent] = useState('')
   const [path, setPath] = useState('')
 
@@ -38,6 +39,12 @@ export default function Text() {
     router.push('/')
   }
 
+  const goBelow = () => {
+    if (belowRef.current) {
+      belowRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }
+
   useEffect(() => {
     getContent()
   }, [])
@@ -47,8 +54,10 @@ export default function Text() {
       <div className="w-full flex justify-center gap-16">
         <button onClick={goBack}>뒤로가기</button>
         <button onClick={editTXT}>저장</button>
+        <button onClick={goBelow}>아래로</button>
       </div>
       <textarea
+        ref={belowRef}
         value={content}
         onChange={(e) => {
           setContent(e.target.value)
