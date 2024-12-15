@@ -29,6 +29,7 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
+
 .text-overflow-2 {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -37,4 +38,18 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 10px;
+  cursor: default;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
 }

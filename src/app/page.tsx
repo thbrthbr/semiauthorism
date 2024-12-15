@@ -5,8 +5,13 @@ import { storage } from '../firebase/firebaseConfig'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useRouter } from 'next/navigation'
 import { IoIosClose } from 'react-icons/io'
+import Menu from '@/component/menu'
 
 export default function Home() {
+  const [location, setLocation] = useState({
+    x: -1,
+    y: -1,
+  })
   const [modSwitch, setModSwitch] = useState(-1)
   const [isOpened, setIsOpened] = useState(false)
   const [datas, setDatas] = useState<any>([])
@@ -133,7 +138,25 @@ export default function Home() {
   }, [isOpened])
 
   return (
-    <div className="bg-black flex flex-col items-center justify-center">
+    <div
+      className="relative bg-black flex flex-col items-center justify-start h-screen"
+      onContextMenu={(e) => {
+        console.log(e)
+        e.preventDefault()
+        setLocation({
+          x: e.pageX,
+          y: e.pageY,
+        })
+      }}
+      onClick={() => {
+        setLocation({
+          x: -1,
+          y: -1,
+        })
+        setModSwitch(-1)
+      }}
+    >
+      {location.x !== -1 && <Menu location={location} />}
       {isOpened ? (
         <div>
           <div className="flex m-8 gap-8 flex-wrap">
@@ -151,7 +174,7 @@ export default function Home() {
             {datas.map((data: any, idx: number) => {
               return (
                 <div
-                  className="flex flex-col items-center w-[140px] h-[240px] cursor-pointer"
+                  className="z-40 flex flex-col items-center w-[140px] h-[240px] cursor-pointer"
                   key={idx + 1}
                   onClick={() => {
                     enterText(data.id)
@@ -168,11 +191,14 @@ export default function Home() {
                       <IoIosClose />
                     </div>
                     <div className="ml-4 mr-4 h-full flex justify-start items-center text-black">
-                      <div className="text-overflow">{data.realTitle}</div>
+                      <div className="text-overflow w-full text-center">
+                        {data.realTitle}
+                      </div>
                     </div>
                   </div>
                   <div
                     onContextMenu={(e) => {
+                      e.stopPropagation()
                       e.preventDefault()
                       setModSwitch(idx)
                       setOriginTitle(datas[idx].realTitle)
