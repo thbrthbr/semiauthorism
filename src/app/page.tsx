@@ -15,8 +15,8 @@ export default function Home() {
   const [modSwitch, setModSwitch] = useState(-1)
   const [isOpened, setIsOpened] = useState(false)
   const [datas, setDatas] = useState<any>([])
-  const [originTitle, setOriginTitle] = useState('')
-  const [tempTitle, setTempTitle] = useState('')
+  // const [originTitle, setOriginTitle] = useState('')
+  // const [tempTitle, setTempTitle] = useState('')
   const pwRef = useRef<any>(null)
   const router = useRouter()
 
@@ -71,7 +71,7 @@ export default function Home() {
         )
         const final = await brought.json()
         const semi = datas.slice(0)
-        semi.push(final.data)
+        semi.unshift(final.data)
         setDatas(semi)
       })
     })
@@ -83,7 +83,10 @@ export default function Home() {
       cache: 'no-store',
     })
     const texts = await result.json()
-    setDatas(texts.data)
+    const sorted = texts.data
+      .sort((x: any, y: any) => x.order - y.order)
+      .reverse()
+    setDatas(sorted)
   }
 
   const enterText = (each: string) => {
@@ -139,9 +142,8 @@ export default function Home() {
 
   return (
     <div
-      className="relative bg-black flex flex-col items-center justify-start h-screen"
+      className="relative bg-black text-white flex flex-col items-center justify-start h-screen"
       onContextMenu={(e) => {
-        console.log(e)
         e.preventDefault()
         setLocation({
           x: e.pageX,
@@ -201,7 +203,7 @@ export default function Home() {
                       e.stopPropagation()
                       e.preventDefault()
                       setModSwitch(idx)
-                      setOriginTitle(datas[idx].realTitle)
+                      // setOriginTitle(datas[idx].realTitle)
                     }}
                   >
                     {modSwitch == idx ? (
@@ -215,7 +217,7 @@ export default function Home() {
                           onChange={(e) => {
                             let temp = datas.slice(0)
                             temp[idx].realTitle = e.target.value
-                            setTempTitle(e.target.value)
+                            // setTempTitle(e.target.value)
                             setDatas(temp)
                           }}
                           onKeyDown={(e) => {
