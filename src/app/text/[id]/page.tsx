@@ -78,17 +78,17 @@ export default function Text() {
     <div className="flex flex-col w-full h-screen">
       <div className="w-full flex justify-center gap-16 p-1">
         <button onClick={() => router.push('/')}>
-          <FaArrowLeft />
+          <FaArrowLeft className="text-[#FFFFFF]" />
         </button>
         <button onClick={editTXT}>
-          <FaRegSave className="text-[#FFFFFF] font-bold text-xl" />
+          <FaRegSave className="text-[#FFFFFF]" />
         </button>
         <button
           onClick={() =>
             belowRef.current?.scrollTo({ top: belowRef.current.scrollHeight })
           }
         >
-          <FaArrowDown />
+          <FaArrowDown className="text-[#FFFFFF]" />
         </button>
       </div>
       <textarea
