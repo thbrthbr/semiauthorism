@@ -76,7 +76,7 @@ export default function Text() {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <div className="w-full flex justify-center gap-16 p-1">
+      <div className="w-full flex justify-center items-center gap-16 px-1 py-3">
         <button onClick={() => router.push('/')}>
           <FaArrowLeft className="text-[#FFFFFF]" />
         </button>
