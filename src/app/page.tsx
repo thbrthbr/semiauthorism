@@ -89,6 +89,7 @@ export default function Home() {
       .sort((x: any, y: any) => x.order - y.order)
       .reverse()
     setDatas(sorted)
+    setLoading(false)
   }
 
   const enterText = (each: string) => {
