@@ -6,8 +6,10 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useRouter } from 'next/navigation'
 import { IoIosClose } from 'react-icons/io'
 import Menu from '@/component/menu'
+import Spinner from '@/component/spinner'
 
 export default function Home() {
+  const [loading, setLoading] = useState(true)
   const [location, setLocation] = useState({
     x: -1,
     y: -1,
@@ -161,81 +163,87 @@ export default function Home() {
       {location.x !== -1 && <Menu location={location} />}
       {isOpened ? (
         <div>
-          <div className="flex m-8 gap-8 flex-wrap">
-            <div
-              className="flex flex-col items-center w-[140px]"
-              key={0}
-              onClick={addWritten}
-            >
-              <div className="rounded-md bg-white w-[140px] h-[200px]">
-                <div className="ml-4 mr-4 h-full flex justify-center items-center text-black text-center cursor-pointer">
-                  +
+          {loading ? (
+            <div className="w-full h-screen flex justify-center items-center text-white">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="flex m-8 gap-8 flex-wrap">
+              <div
+                className="flex flex-col items-center w-[140px]"
+                key={0}
+                onClick={addWritten}
+              >
+                <div className="rounded-md bg-white w-[140px] h-[200px]">
+                  <div className="ml-4 mr-4 h-full flex justify-center items-center text-black text-center cursor-pointer">
+                    +
+                  </div>
                 </div>
               </div>
-            </div>
-            {datas.map((data: any, idx: number) => {
-              return (
-                <div
-                  className="z-40 flex flex-col items-center w-[140px] h-[240px] cursor-pointer"
-                  key={idx + 1}
-                  onClick={() => {
-                    enterText(data.id)
-                  }}
-                >
-                  <div className="relative rounded-md bg-white w-[140px] h-[200px] mh-[200px]">
-                    <div
-                      className="absolute text-black p-1 end-0"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        deleteWritten(data.id)
-                      }}
-                    >
-                      <IoIosClose />
-                    </div>
-                    <div className="ml-4 mr-4 h-full flex justify-start items-center text-black">
-                      <div className="text-overflow w-full text-center">
-                        {data.realTitle}
-                      </div>
-                    </div>
-                  </div>
+              {datas.map((data: any, idx: number) => {
+                return (
                   <div
-                    onContextMenu={(e) => {
-                      e.stopPropagation()
-                      e.preventDefault()
-                      setModSwitch(idx)
-                      // setOriginTitle(datas[idx].realTitle)
+                    className="z-40 flex flex-col items-center w-[140px] h-[240px] cursor-pointer"
+                    key={idx + 1}
+                    onClick={() => {
+                      enterText(data.id)
                     }}
                   >
-                    {modSwitch == idx ? (
-                      <div>
-                        <input
-                          className="text-black"
-                          value={data.realTitle}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                          }}
-                          onChange={(e) => {
-                            let temp = datas.slice(0)
-                            temp[idx].realTitle = e.target.value
-                            // setTempTitle(e.target.value)
-                            setDatas(temp)
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key == 'Enter') {
-                              setModSwitch(-1)
-                              editTitle(data.id, datas[idx].realTitle)
-                            }
-                          }}
-                        ></input>
+                    <div className="relative rounded-md bg-white w-[140px] h-[200px] mh-[200px]">
+                      <div
+                        className="absolute text-black p-1 end-0"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteWritten(data.id)
+                        }}
+                      >
+                        <IoIosClose />
                       </div>
-                    ) : (
-                      <div className="text-overflow-2">{data.realTitle}</div>
-                    )}
+                      <div className="ml-4 mr-4 h-full flex justify-start items-center text-black">
+                        <div className="text-overflow w-full text-center">
+                          {data.realTitle}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      onContextMenu={(e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        setModSwitch(idx)
+                        // setOriginTitle(datas[idx].realTitle)
+                      }}
+                    >
+                      {modSwitch == idx ? (
+                        <div>
+                          <input
+                            className="text-black"
+                            value={data.realTitle}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                            }}
+                            onChange={(e) => {
+                              let temp = datas.slice(0)
+                              temp[idx].realTitle = e.target.value
+                              // setTempTitle(e.target.value)
+                              setDatas(temp)
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key == 'Enter') {
+                                setModSwitch(-1)
+                                editTitle(data.id, datas[idx].realTitle)
+                              }
+                            }}
+                          ></input>
+                        </div>
+                      ) : (
+                        <div className="text-overflow-2">{data.realTitle}</div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       ) : (
         <>

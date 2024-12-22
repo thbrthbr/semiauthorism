@@ -4,7 +4,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { ref, uploadString } from 'firebase/storage'
 import { storage } from '@/firebase/firebaseConfig'
-// import SkewLoader from 'react-spinners/SkewLoader'
 import { FaArrowLeft, FaArrowDown, FaRegSave } from 'react-icons/fa'
 import Spinner from '@/component/spinner'
 
@@ -88,7 +87,6 @@ export default function Text() {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center text-white">
-        {/* <SkewLoader size="40px" color="white" /> */}
         <Spinner />
       </div>
     )
