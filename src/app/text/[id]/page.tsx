@@ -12,7 +12,7 @@ export default function Text() {
   const router = useRouter()
   const param = useParams()
   const belowRef = useRef<any>(null)
-  const contentRef = useRef('') // content 상태를 저장하기 위한 useRef
+  const contentRef = useRef('')
   const [content, setContent] = useState('')
   const [path, setPath] = useState('')
   const [loading, setLoading] = useState(true)
@@ -50,10 +50,6 @@ export default function Text() {
     }
   }
 
-  useEffect(() => {
-    contentRef.current = content
-  }, [content])
-
   const editTXT = useCallback(async () => {
     if (belowRef.current) {
       const fileRef = ref(storage, `texts/${path}.txt`)
@@ -83,12 +79,12 @@ export default function Text() {
 
       // 현재 커서 위치에 Tab 추가
       const newValue =
-        content.substring(0, start) + '\t' + content.substring(end)
+        content.substring(0, start) + '  ' + content.substring(end)
       setContent(newValue)
 
       // 커서를 들여쓰기 이후 위치로 이동
       setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 1
+        target.selectionStart = target.selectionEnd = start + 2
       }, 0)
     }
   }
@@ -100,6 +96,10 @@ export default function Text() {
       document.removeEventListener('keydown', handleSaveShortcut)
     }
   }, [handleSaveShortcut])
+
+  useEffect(() => {
+    contentRef.current = content
+  }, [content])
 
   if (loading) {
     return (
@@ -134,7 +134,7 @@ export default function Text() {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleTabKey} // Tab 키 핸들러 추가
-        className="h-screen overflow-y-scroll scrollbar outline-none bg-black m-4 text-white resize-none"
+        className="relative h-screen overflow-y-scroll scrollbar outline-none bg-black m-4 text-white resize-none"
       ></textarea>
     </div>
   )
