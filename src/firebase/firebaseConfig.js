@@ -93,7 +93,6 @@ export async function editSpecificTitle({ id, newTitle }) {
 }
 
 export async function deleteSpecificText(id) {
-  console.log(id)
   await deleteDoc(doc(db, 'text', id))
   return { status: '성공' }
 }

@@ -6,6 +6,7 @@ import { ref, uploadString } from 'firebase/storage'
 import { storage } from '@/firebase/firebaseConfig'
 import { FaArrowLeft, FaArrowDown, FaRegSave } from 'react-icons/fa'
 import Spinner from '@/component/spinner'
+import { LuDownload } from 'react-icons/lu'
 
 export default function Text() {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function Text() {
   const [content, setContent] = useState('')
   const [path, setPath] = useState('')
   const [loading, setLoading] = useState(true)
+  const [txtTitle, setTxtTitle] = useState('')
 
   const getContent = async () => {
     if (param) {
@@ -29,6 +31,22 @@ export default function Text() {
       setPath(final.data[0].title)
       setContent(textContent)
       setLoading(false)
+      setTxtTitle(final.data[0].realTitle)
+    }
+  }
+
+  const downloadTXT = (e: any) => {
+    const willYou = window.confirm('텍스트 파일은 다운로드 하시겠습니까?')
+    if (willYou) {
+      const blob = new Blob([content], { type: 'text/plain' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.download = txtTitle
+      a.href = url
+      a.click()
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+      }, 100)
     }
   }
 
@@ -37,7 +55,6 @@ export default function Text() {
   }, [content])
 
   const editTXT = useCallback(async () => {
-    console.log(contentRef.current) // 항상 최신 값 확인
     if (belowRef.current) {
       const fileRef = ref(storage, `texts/${path}.txt`)
       await uploadString(fileRef, contentRef.current, 'raw', {
@@ -100,6 +117,9 @@ export default function Text() {
         </button>
         <button onClick={editTXT}>
           <FaRegSave className="text-[#FFFFFF]" />
+        </button>
+        <button onClick={downloadTXT}>
+          <LuDownload className="text-[#FFFFFF] font-bold" />
         </button>
         <button
           onClick={() =>

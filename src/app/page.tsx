@@ -48,6 +48,47 @@ export default function Home() {
     }
   }
 
+  const addTXT = async () => {
+    try {
+      let file: any = document.createElement('input')
+      file.type = 'file'
+      file.addEventListener('change', async () => {
+        if (file.files[0].type !== 'text/plain') {
+          alert('txt 파일만 올릴 수 있습니다')
+          return
+        }
+        const fileName = file.files[0].name
+        const fileRef = ref(storage, `texts/${fileName}.txt`)
+        await uploadBytes(fileRef, file.files[0]).then(async (snapshot) => {
+          getDownloadURL(snapshot.ref).then(async (downUrl) => {
+            const brought = await fetch(
+              `${process.env.NEXT_PUBLIC_SITE}/api/text`,
+              {
+                method: 'POST',
+                body: JSON.stringify({
+                  title: fileName,
+                  path: downUrl,
+                  order: Date.now(),
+                  realTitle: fileName,
+                }),
+                cache: 'no-store',
+              },
+            )
+            const final = await brought.json()
+            const semi = datas.slice(0)
+            semi.unshift(final.data)
+            setDatas(semi)
+            setLocation({
+              x: -1,
+              y: -1,
+            })
+          })
+        })
+      })
+      file.click()
+    } catch (e) {}
+  }
+
   const makeTXTfile = () => {
     return new Blob([''], { type: 'text/plain;charset=utf-8' })
   }
@@ -161,7 +202,9 @@ export default function Home() {
         setModSwitch(-1)
       }}
     >
-      {location.x !== -1 && <Menu location={location} />}
+      {location.x !== -1 && (
+        <Menu location={location} customFunctions={{ addText: addTXT }} />
+      )}
       {isOpened ? (
         <div>
           {loading ? (
@@ -247,19 +290,25 @@ export default function Home() {
           )}
         </div>
       ) : (
-        <>
-          <div>비밀번호를 입력하세요</div>
-          <input
-            type="password"
-            className="text-black"
-            onKeyDown={(e) => {
-              if (e.key == 'Enter') {
-                insertPW()
-              }
-            }}
-            ref={pwRef}
-          ></input>
-        </>
+        <div className="w-full h-screen flex flex-col justify-center items-center gap-4">
+          <div className="flex flex-col justify-center items-center text-7xl font-lobster select-none">
+            <div>Semi</div>
+            <div>Authorism</div>
+          </div>
+          <div className="flex flex-col justify-center items-center">
+            <div>비밀번호를 입력하세요</div>
+            <input
+              type="password"
+              className="text-black"
+              onKeyDown={(e) => {
+                if (e.key == 'Enter') {
+                  insertPW()
+                }
+              }}
+              ref={pwRef}
+            ></input>
+          </div>
+        </div>
       )}
     </div>
   )

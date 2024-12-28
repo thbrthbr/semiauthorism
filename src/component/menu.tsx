@@ -1,5 +1,6 @@
 interface Props {
   location: Location
+  customFunctions: any
 }
 
 interface Location {
@@ -7,27 +8,26 @@ interface Location {
   y: number
 }
 
-export default function Menu({ location }: Props) {
+export default function Menu({ location, customFunctions }: Props) {
   const { x, y } = location
+
   return (
     <div
+      className="border p-2 rounded-md z-[9999] bg-white text-black absolute flex flex-col gap-2 w-[200px]"
       style={{
-        width: '200px',
-
-        position: 'absolute',
         left: `${x}px`,
         top: `${y}px`,
-        color: 'black',
-        backgroundColor: 'white',
-        zIndex: 9999,
-        borderRadius: '6px',
-        padding: '8px',
       }}
       onClick={(e) => {
         e.stopPropagation()
       }}
     >
-      <button>폴더 추가</button>
+      <div>
+        <button onClick={customFunctions?.addText}>txt파일 추가</button>
+      </div>
+      <div>
+        <button>폴더 추가</button>
+      </div>
     </div>
   )
 }
