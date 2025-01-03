@@ -11,11 +11,10 @@ import { LuDownload } from 'react-icons/lu'
 export default function Text() {
   const router = useRouter()
   const param = useParams()
-  const belowRef = useRef<any>(null)
-  const contentRef = useRef('')
-  const [content, setContent] = useState('')
+  const contentRef = useRef<any>(null)
   const [path, setPath] = useState('')
   const [loading, setLoading] = useState(true)
+  const [original, setOriginal] = useState('')
   const [txtTitle, setTxtTitle] = useState('')
 
   const getContent = async () => {
@@ -29,7 +28,8 @@ export default function Text() {
       const response = await fetch(path)
       const textContent = await response.text()
       setPath(final.data[0].title)
-      setContent(textContent)
+      setOriginal(textContent)
+      if (contentRef.current) contentRef.current.value = textContent
       setLoading(false)
       setTxtTitle(final.data[0].realTitle)
     }
@@ -38,54 +38,66 @@ export default function Text() {
   const downloadTXT = (e: any) => {
     const willYou = window.confirm('텍스트 파일은 다운로드 하시겠습니까?')
     if (willYou) {
-      const blob = new Blob([content], { type: 'text/plain' })
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.download = txtTitle
-      a.href = url
-      a.click()
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url)
-      }, 100)
+      if (contentRef.current) {
+        const blob = new Blob([contentRef.current.value], {
+          type: 'text/plain',
+        })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.download = txtTitle
+        a.href = url
+        a.click()
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url)
+        }, 100)
+      }
     }
   }
 
   const editTXT = useCallback(async () => {
-    if (belowRef.current) {
+    if (contentRef.current) {
       const fileRef = ref(storage, `texts/${path}.txt`)
-      await uploadString(fileRef, contentRef.current, 'raw', {
+      await uploadString(fileRef, contentRef.current.value, 'raw', {
         contentType: 'text/plain;charset=utf-8',
       })
       alert('저장되었습니다')
+      setOriginal(contentRef.current.value)
     }
   }, [path])
 
   const handleSaveShortcut = useCallback(
     (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === 's') {
+      if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
         event.preventDefault()
-        editTXT() // 최신 상태가 반영된 editTXT 호출
+        editTXT()
       }
     },
-    [editTXT], // editTXT를 의존성으로 추가
+    [editTXT],
   )
 
   const handleTabKey = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Tab') {
-      event.preventDefault() // 기본 동작 방지 (다음 요소로 포커스 이동)
+      event.preventDefault()
       const target = event.target as HTMLTextAreaElement
       const start = target.selectionStart
-      const end = target.selectionEnd
-
-      // 현재 커서 위치에 Tab 추가
-      const newValue =
-        content.substring(0, start) + '  ' + content.substring(end)
-      setContent(newValue)
-
-      // 커서를 들여쓰기 이후 위치로 이동
+      const tabSpace = '  '
+      target.focus()
+      // execCommand 써야 tab한 것에 대한 컨트롤 z가 제대로 작동함 -> 바꿀 수 있으면 나중에 바꿔보자
+      document.execCommand('insertText', false, `${tabSpace}`)
       setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 2
+        target.selectionStart = target.selectionEnd = start + tabSpace.length
       }, 0)
+    }
+  }
+
+  const handleBack = () => {
+    if (contentRef.current) {
+      if (contentRef.current.value !== original) {
+        const confirm = window.confirm(
+          '내용이 변경되었습니다. \n변경사항을 저장하지 않고 페이지를 이탈하시겠습니까?',
+        )
+        if (confirm) router.push('/')
+      } else router.push('/')
     }
   }
 
@@ -96,10 +108,6 @@ export default function Text() {
       document.removeEventListener('keydown', handleSaveShortcut)
     }
   }, [handleSaveShortcut])
-
-  useEffect(() => {
-    contentRef.current = content
-  }, [content])
 
   if (loading) {
     return (
@@ -112,7 +120,7 @@ export default function Text() {
   return (
     <div className="flex flex-col w-full h-screen">
       <div className="w-full flex justify-center items-center gap-16 px-1 py-3">
-        <button onClick={() => router.push('/')}>
+        <button onClick={handleBack}>
           <FaArrowLeft className="text-[#FFFFFF]" />
         </button>
         <button onClick={editTXT}>
@@ -123,17 +131,17 @@ export default function Text() {
         </button>
         <button
           onClick={() =>
-            belowRef.current?.scrollTo({ top: belowRef.current.scrollHeight })
+            contentRef.current?.scrollTo({
+              top: contentRef.current.scrollHeight,
+            })
           }
         >
           <FaArrowDown className="text-[#FFFFFF]" />
         </button>
       </div>
       <textarea
-        ref={belowRef}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyDown={handleTabKey} // Tab 키 핸들러 추가
+        ref={contentRef}
+        onKeyDown={handleTabKey}
         className="relative h-screen overflow-y-scroll scrollbar outline-none bg-black m-4 text-white resize-none"
       ></textarea>
     </div>
