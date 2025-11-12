@@ -23,6 +23,8 @@ export default function Home() {
   // const [originTitle, setOriginTitle] = useState('')
   // const [tempTitle, setTempTitle] = useState('')
   const pwRef = useRef<any>(null);
+  const pollNameRef = useRef<any>(null);
+  const pollDescRef = useRef<any>(null);
   const router = useRouter();
 
   // const insertPW = () => {
@@ -177,17 +179,62 @@ export default function Home() {
     });
   };
 
+  //   const localStorager = () => {
+  //     let prompt = window.prompt(
+  //       '티어표의 이름을 정해주세요 \nName your tierlist',
+  //     );
+  //     while (prompt == 'namedb') {
+  //       prompt = window.prompt(
+  //         '다른 이름으로 정해주세요 \nPlease choose different name',
+  //       );
+  //     }
+  //     if (!prompt) return;
+  //     if (localStorage.getItem('namedb')) {
+  //       let namedb = JSON.parse(localStorage.getItem('namedb') as string);
+  //       for (let i = 0; i < namedb.length; i++) {
+  //         if (namedb[i] == prompt) {
+  //           let howyoudo;
+  //           if (prompt == namedb[i]) {
+  //             howyoudo = window.confirm(
+  //               '같은 이름의 세이브 데이터에 덮어 씌우겠습니까? \nOverride on same name data?',
+  //             );
+  //           }
+  //           if (!howyoudo) return;
+  //           break;
+  //         }
+  //       }
+  //       //   namedb.push(prompt);
+  //       if (!namedb.includes(prompt)) {
+  //         namedb.push(prompt);
+  //       }
+  //       localStorage.setItem('namedb', JSON.stringify(namedb));
+  //       if (localStorage.getItem(prompt)) {
+  //         localStorage.removeItem(prompt);
+  //       }
+  //       localStorage.setItem(prompt, JSON.stringify(tierList));
+  //     } else {
+  //       let namedb = [prompt];
+  //       localStorage.setItem('namedb', JSON.stringify(namedb));
+  //       localStorage.setItem(prompt, JSON.stringify(tierList));
+  //     }
+  //     dbloader();
+  //   };
+
   // @@@@@@@@@@@@@@@@@@@@@@@@
 
-  const createPoll = async (id: string, desc: string) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll/create`, {
-      method: 'POST',
-      body: JSON.stringify({
-        id,
-        desc,
-      }),
-      cache: 'no-store',
-    });
+  const createPoll = async () => {
+    // const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     title: pollNameRef,
+    //     desc: pollDescRef,
+    //     categories: items,
+    //   }),
+    //   cache: 'no-store',
+    // });
+    console.log(items);
+    console.log(pollNameRef.current.value);
+    console.log(pollDescRef.current.value);
   };
 
   const addItem = () => {
@@ -204,25 +251,17 @@ export default function Home() {
     setItems(temp);
   };
 
-  const changeImage = () => {
+  const changeImage = (id: number) => {
     let file: any = document.createElement('input');
     file.type = 'file';
     file.accept = '.jpg, .png, .gif, .webp';
     file.addEventListener('change', async (file: any) => {
       let image = file.target.files[0];
-      const path = 'profileImage/' + Date.now() + ':' + image.name;
+      const path = 'poll-image/' + Date.now() + ':' + image.name;
       const storageRef = ref(storage, path);
       uploadBytes(storageRef, image).then(async (snapshot) => {
         getDownloadURL(snapshot.ref).then(async (downUrl) => {
-          await fetch(`http://localhost:3000/api/poll-image`, {
-            method: 'POST',
-            body: JSON.stringify({
-              id: Date.now(),
-              image: downUrl,
-              nick: null,
-            }),
-            cache: 'no-store',
-          });
+          changeItem(id, 'img', downUrl);
         });
       });
     });
@@ -230,7 +269,6 @@ export default function Home() {
   };
 
   const changeEditMode = (id: number) => {
-    console.log(id);
     let temp = [];
     for (let i = 0; i < items.length; i++) {
       if (items[i].id === id) {
@@ -256,6 +294,8 @@ export default function Home() {
           obj.title = value;
         } else if (type == 'desc') {
           obj.desc = value;
+        } else if (type == 'img') {
+          obj.img = value;
         }
         temp.push(obj);
       } else {
@@ -272,6 +312,8 @@ export default function Home() {
     }
     setItems(temp);
   };
+
+  const savePoll = () => {};
 
   const getVote = () => {};
 
@@ -294,15 +336,25 @@ export default function Home() {
       </button>
       <div className="w-full flex flex-col justify-center items-center">
         <div>
-          <input placeholder="투표이름"></input>
-          <input placeholder="어떤 투표인지 설명"></input>
+          <input ref={pollNameRef} placeholder="투표이름"></input>
+          <input ref={pollDescRef} placeholder="어떤 투표인지 설명"></input>
         </div>
         {items.map((item: any, i: number) => {
           return (
             <div className="w-72 flex flex-col m-5" key={i}>
               {item.editMode ? (
                 <div className="w-full flex flex-col">
-                  <button onClick={changeImage}>이미지수정</button>
+                  <img
+                    className="w-full"
+                    src={item.img === 'no-image' ? defaultImg.src : item.img}
+                  ></img>
+                  <button
+                    onClick={() => {
+                      changeImage(items[i].id);
+                    }}
+                  >
+                    이미지수정
+                  </button>
                   <div className="w-full flex flex-col">
                     이름 :{' '}
                     <input
@@ -324,7 +376,10 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="w-full flex">
-                  <img className="w-24 h-24" src={defaultImg.src}></img>
+                  <img
+                    className="w-24 h-24"
+                    src={item.img === 'no-image' ? defaultImg.src : item.img}
+                  ></img>
                   <div className="w-full flex flex-col justify-between m-4">
                     <div>이름 : {item.title}</div>
                     <div>미정 : {item.desc}</div>
@@ -351,6 +406,7 @@ export default function Home() {
           );
         })}
         <button onClick={addItem}>추가용</button>
+        <button onClick={createPoll}>투표생성</button>
       </div>
     </div>
   );

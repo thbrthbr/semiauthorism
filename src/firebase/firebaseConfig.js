@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp } from 'firebase/app';
 import {
   getFirestore,
   collection,
@@ -9,8 +9,8 @@ import {
   doc,
   query,
   where,
-} from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+} from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -21,36 +21,36 @@ const firebaseConfig = {
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.APP_ID,
   measurementId: process.env.MEASUREMENT_ID,
-}
+};
 
-const app = initializeApp(firebaseConfig)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 export async function addText({ title, path, order, realTitle }) {
-  const newReplay = doc(collection(db, 'text'))
+  const newReplay = doc(collection(db, 'text'));
   await setDoc(newReplay, {
     id: newReplay.id,
     title,
     realTitle,
     path,
     order,
-  })
+  });
   return {
     id: newReplay.id,
     title,
     path,
     order,
     realTitle,
-  }
+  };
 }
 
 export async function getTexts() {
-  const querySnapshot = await getDocs(query(collection(db, 'text')))
+  const querySnapshot = await getDocs(query(collection(db, 'text')));
   if (querySnapshot.empty) {
-    return []
+    return [];
   }
-  const fetchedReplays = []
+  const fetchedReplays = [];
   querySnapshot.forEach((doc) => {
     const aTodo = {
       id: doc.id,
@@ -58,20 +58,20 @@ export async function getTexts() {
       title: doc.data()['title'],
       path: doc.data()['path'],
       order: doc.data()['order'],
-    }
-    fetchedReplays.push(aTodo)
-  })
-  return fetchedReplays
+    };
+    fetchedReplays.push(aTodo);
+  });
+  return fetchedReplays;
 }
 
 export async function getSpecificText(id) {
   const querySnapshot = await getDocs(
     query(collection(db, 'text'), where('id', '==', id)),
-  )
+  );
   if (querySnapshot.empty) {
-    return []
+    return [];
   }
-  const fetchedTexts = []
+  const fetchedTexts = [];
   querySnapshot.forEach((doc) => {
     fetchedTexts.push({
       id: doc.id,
@@ -79,20 +79,35 @@ export async function getSpecificText(id) {
       realTitle: doc.data()['realTitle'],
       path: doc.data()['path'],
       order: doc.data()['order'],
-    })
-  })
-  return fetchedTexts
+    });
+  });
+  return fetchedTexts;
 }
 
 export async function editSpecificTitle({ id, newTitle }) {
-  const todoRef = doc(db, 'text', id)
+  const todoRef = doc(db, 'text', id);
   const fetched = await updateDoc(todoRef, {
     realTitle: newTitle,
-  })
-  return fetched
+  });
+  return fetched;
 }
 
 export async function deleteSpecificText(id) {
-  await deleteDoc(doc(db, 'text', id))
-  return { status: '성공' }
+  await deleteDoc(doc(db, 'text', id));
+  return { status: '성공' };
+}
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+export async function addPoll({ categories, desc, title }) {
+  const newPoll = doc(collection(db, 'poll'));
+  const voters = '[]';
+  const createdPoll = await setDoc(newPoll, {
+    id: newReplay.id,
+    categories,
+    title,
+    voters,
+    desc,
+  });
+  return createdPoll;
 }
