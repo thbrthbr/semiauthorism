@@ -99,12 +99,51 @@ export async function deleteSpecificText(id) {
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+export async function getPolls() {
+  const querySnapshot = await getDocs(query(collection(db, 'poll')));
+  if (querySnapshot.empty) {
+    return [];
+  }
+  const fetchedPolls = [];
+  querySnapshot.forEach((doc) => {
+    const poll = {
+      categories: doc.data()['categories'],
+      desc: doc.data()['desc'],
+      id: doc.data()['id'],
+      title: doc.data()['title'],
+      voters: doc.data()['voters'],
+    };
+    fetchedPolls.push(poll);
+  });
+  return fetchedPolls;
+}
+
+export async function getPoll({ id, title }) {
+  const querySnapshot = await getDocs(
+    query(collection(db, 'poll'), where('id', '==', id)),
+  );
+  if (querySnapshot.empty) {
+    return [];
+  }
+  const fetchedPoll = [];
+  querySnapshot.forEach((doc) => {
+    fetchedTexts.push({
+      categories: doc.data()['categories'],
+      desc: doc.data()['desc'],
+      id: doc.data()['id'],
+      title: doc.data()['title'],
+      voters: doc.data()['voters'],
+    });
+  });
+  return fetchedPoll;
+}
+
 export async function addPoll({ categories, desc, title }) {
   const newPoll = doc(collection(db, 'poll'));
   const voters = '[]';
   const createdPoll = await setDoc(newPoll, {
-    id: newReplay.id,
-    categories,
+    id: newPoll.id,
+    categories: JSON.stringify(categories),
     title,
     voters,
     desc,

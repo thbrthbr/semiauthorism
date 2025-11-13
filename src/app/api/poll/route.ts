@@ -13,15 +13,16 @@ import { NextRequest, NextResponse } from 'next/server';
 // }
 
 export async function POST(request: NextRequest) {
-  const { categories, title, type } = await request.json();
+  const { categories, title, desc, type } = await request.json();
   let response = {};
   if (type == 'create') {
     const addedPoll = await addPoll({
       categories,
+      desc,
       title,
     });
     response = {
-      message: '무라사키',
+      message: '투표생성됨',
       data: addedPoll,
     };
   } else {

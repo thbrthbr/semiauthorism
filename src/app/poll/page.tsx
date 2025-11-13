@@ -9,7 +9,7 @@ import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import defaultImg from '../../asset/no-image.png';
 
-export default function Home() {
+export default function Poll() {
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState({
     x: -1,
@@ -223,18 +223,28 @@ export default function Home() {
   // @@@@@@@@@@@@@@@@@@@@@@@@
 
   const createPoll = async () => {
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     title: pollNameRef,
-    //     desc: pollDescRef,
-    //     categories: items,
-    //   }),
-    //   cache: 'no-store',
-    // });
-    console.log(items);
-    console.log(pollNameRef.current.value);
-    console.log(pollDescRef.current.value);
+    if (!pollNameRef.current.value || !pollDescRef.current.value) {
+      alert('투표의 제목과 설명을 적어주세요');
+      return;
+    }
+    const item = [...items];
+    const send = JSON.stringify(item);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'create',
+        title: pollNameRef.current.value,
+        desc: pollDescRef.current.value,
+        categories: send,
+      }),
+      cache: 'no-store',
+    });
+
+    const final = await res.json();
+    if (final.message == '투표생성됨') {
+      alert('투표가 생성되었습니다');
+      router.push('/');
+    }
   };
 
   const addItem = () => {
@@ -244,6 +254,7 @@ export default function Home() {
       title: '미정',
       desc: '설명없음',
       img: 'no-image',
+      percentage: 0,
       editMode: false,
     };
     let temp = items.slice(0);
@@ -312,8 +323,6 @@ export default function Home() {
     }
     setItems(temp);
   };
-
-  const savePoll = () => {};
 
   const getVote = () => {};
 
