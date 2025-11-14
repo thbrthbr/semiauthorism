@@ -1,8 +1,8 @@
-import { addPoll, getPoll, editPoll } from '@/firebase/firebaseConfig';
+import { addPoll, getTodaySetting, editPoll } from '@/firebase/firebaseConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const fetchedPoll = await getPoll();
+  const fetchedPoll = await getTodaySetting();
   const response = {
     message: '성공',
     data: fetchedPoll,
@@ -26,17 +26,5 @@ export async function POST(request: NextRequest) {
       data: addedPoll,
     };
   }
-  // else {
-  //   const editedPoll = await addPoll({
-  //     categories,
-  //     desc,
-  //     title,
-  //     pw,
-  //   });
-  //   const response = {
-  //     message: '투표수정됨',
-  //     data: editedPoll,
-  //   };
-  // }
   return Response.json(response, { status: 200 });
 }

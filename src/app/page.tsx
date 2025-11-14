@@ -9,16 +9,41 @@ import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 
 export default function Home() {
-    const router = useRouter();
-    return (
-        <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
-            <button
-                onClick={() => {
-                    router.push('/poll');
-                }}
-            >
-                투표 만들러 가기
-            </button>
-        </div>
-    );
+  const [polls, setPolls] = useState<any>([]);
+  const [pod, setPod] = useState<any>(null);
+  const router = useRouter();
+  const auth = () => {
+    const prompt = window.prompt('비밀번호를 입력하세요');
+    if (prompt == 'hengbengquatrobe') {
+      router.push('/poll');
+    }
+  };
+
+  const getTodaySetting = async () => {
+    const result = await fetch(`/api/main`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+    const final = await result.json();
+    console.log(final);
+    setPolls(final.data.polls.map((item: any) => JSON.parse(item.categories)));
+    setPod(final.data.pod);
+  };
+
+  useEffect(() => {
+    getTodaySetting();
+  }, []);
+  return (
+    <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
+      <div>여기에투표화면구현</div>
+      <button onClick={auth}>투표 만들러 가기</button>
+      <button
+        onClick={() => {
+          router.push('/poll');
+        }}
+      >
+        임시생성버튼
+      </button>
+    </div>
+  );
 }

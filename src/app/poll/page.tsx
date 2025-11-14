@@ -19,6 +19,7 @@ export default function Poll() {
   const [isOpened, setIsOpened] = useState(false);
   const [datas, setDatas] = useState<any>([]);
   const [items, setItems] = useState<any>([]);
+  const [protoItems, setProtoItems] = useState<any>([]);
   const [modal, setModal] = useState<boolean>(false);
   // const [originTitle, setOriginTitle] = useState('')
   // const [tempTitle, setTempTitle] = useState('')
@@ -232,6 +233,7 @@ export default function Poll() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll`, {
       method: 'POST',
       body: JSON.stringify({
+        pw: 'temp',
         type: 'create',
         title: pollNameRef.current.value,
         desc: pollDescRef.current.value,
@@ -280,40 +282,43 @@ export default function Poll() {
   };
 
   const changeEditMode = (id: number) => {
-    let temp = [];
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].id === id) {
-        const tempObj = items[i];
-        if (items[i].editMode === true) {
+    setItems((prev: any[]) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, editMode: !item.editMode } : item,
+      ),
+    );
+  };
+
+  const cancelEditMode = (id: number) => {
+    setItems((prev: any[]) =>
+      prev.map((item) => {
+        if (item.id !== id) return item; // 다른 애들은 그대로 둔다
+
+        const proto = protoItems.find((p: any) => p.id === id);
+        if (!proto) {
+          // 혹시 proto가 없으면 최소한 editMode만 끄자
+          return { ...item, editMode: false };
         }
-        tempObj.editMode = !items[i].editMode;
-        temp.push(tempObj);
-      } else {
-        temp.push(items[i]);
-      }
-    }
-    setItems(temp);
+
+        // 원본 값으로 되돌리고 editMode는 false로
+        return { ...proto, editMode: false };
+      }),
+    );
   };
 
   const changeItem = (id: number, type: string, value: string) => {
-    let temp = [];
-    let obj: any = {};
-    for (let i = 0; i < items.length; i++) {
-      if (id === items[i].id && value) {
-        obj = { ...items[i] };
-        if (type === 'title') {
-          obj.title = value;
-        } else if (type == 'desc') {
-          obj.desc = value;
-        } else if (type == 'img') {
-          obj.img = value;
-        }
-        temp.push(obj);
-      } else {
-        temp.push(items[i]);
-      }
-    }
-    setItems(temp);
+    setItems((prev: any) =>
+      prev.map((item: any) => {
+        if (item.id !== id) return { ...item }; // 항상 복사
+
+        const updated = { ...item };
+        if (type === 'title') updated.title = value;
+        if (type === 'desc') updated.desc = value;
+        if (type === 'img') updated.img = value;
+
+        return updated;
+      }),
+    );
   };
 
   const deleteItem = (id: number) => {
@@ -359,7 +364,7 @@ export default function Poll() {
                   ></img>
                   <button
                     onClick={() => {
-                      changeImage(items[i].id);
+                      changeImage(item.id);
                     }}
                   >
                     이미지수정
@@ -371,15 +376,15 @@ export default function Poll() {
                         console.log(e.target.value);
                         changeItem(items[i].id, 'title', e.target.value);
                       }}
-                      value={items[i].title}
+                      value={item.title}
                     ></input>
                     설명 :{' '}
                     <input
                       onChange={(e) => {
                         console.log(e.target);
-                        changeItem(items[i].id, 'desc', e.target.value);
+                        changeItem(item.id, 'desc', e.target.value);
                       }}
-                      value={items[i].desc}
+                      value={item.desc}
                     ></input>
                   </div>
                 </div>
@@ -396,19 +401,29 @@ export default function Poll() {
                 </div>
               )}
               <div className="w-full flex justify-between">
+                {items[i].editMode ? (
+                  <button
+                    onClick={() => {
+                      cancelEditMode(item.id);
+                    }}
+                  >
+                    취소
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      deleteItem(item.id);
+                    }}
+                  >
+                    삭제
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     changeEditMode(item.id);
                   }}
                 >
                   수정
-                </button>
-                <button
-                  onClick={() => {
-                    deleteItem(item.id);
-                  }}
-                >
-                  삭제
                 </button>
               </div>
             </div>

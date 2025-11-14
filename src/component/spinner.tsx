@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
 
 export default function Spinner() {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-48">
       <motion.div
         style={{
           width: 0,
@@ -26,5 +26,5 @@ export default function Spinner() {
         }}
       />
     </div>
-  )
+  );
 }

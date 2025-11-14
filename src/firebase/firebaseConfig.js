@@ -99,6 +99,41 @@ export async function deleteSpecificText(id) {
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+export async function getTodaySetting() {
+  const querySnapshot = await getDocs(query(collection(db, 'poll-of-today')));
+  if (querySnapshot.empty) {
+    return [];
+  }
+  const setting = { pod: {}, polls: [] };
+  let pod = '';
+  querySnapshot.forEach((doc) => {
+    pod = doc.data()['pod'];
+  });
+  const querySnapshot2 = await getDocs(query(collection(db, 'poll')));
+  if (querySnapshot.empty) {
+    return [];
+  }
+  const fetchedPolls = [];
+  querySnapshot2.forEach((doc) => {
+    const poll = {
+      categories: doc.data()['categories'],
+      desc: doc.data()['desc'],
+      id: doc.data()['id'],
+      title: doc.data()['title'],
+      voters: doc.data()['voters'],
+      publicId: doc.data()['publicId'],
+    };
+    fetchedPolls.push(poll);
+    if (pod == doc.data()['id']) {
+      setting.pod = poll;
+    }
+  });
+
+  setting.polls = fetchedPolls;
+
+  return setting;
+}
+
 export async function getPolls() {
   const querySnapshot = await getDocs(query(collection(db, 'poll')));
   if (querySnapshot.empty) {
@@ -112,13 +147,14 @@ export async function getPolls() {
       id: doc.data()['id'],
       title: doc.data()['title'],
       voters: doc.data()['voters'],
+      publicId: doc.data()['publicId'],
     };
     fetchedPolls.push(poll);
   });
   return fetchedPolls;
 }
 
-export async function getPoll({ id, title }) {
+export async function getPoll({ id }) {
   const querySnapshot = await getDocs(
     query(collection(db, 'poll'), where('id', '==', id)),
   );
@@ -127,26 +163,39 @@ export async function getPoll({ id, title }) {
   }
   const fetchedPoll = [];
   querySnapshot.forEach((doc) => {
-    fetchedTexts.push({
+    fetchedPoll.push({
       categories: doc.data()['categories'],
       desc: doc.data()['desc'],
       id: doc.data()['id'],
       title: doc.data()['title'],
       voters: doc.data()['voters'],
+      publicId: doc.data()['publicId'],
     });
   });
   return fetchedPoll;
 }
 
-export async function addPoll({ categories, desc, title }) {
+export async function addPoll({ categories, desc, title, pw }) {
   const newPoll = doc(collection(db, 'poll'));
   const voters = '[]';
   const createdPoll = await setDoc(newPoll, {
     id: newPoll.id,
-    categories: JSON.stringify(categories),
+    pw,
+    categories,
     title,
     voters,
     desc,
+    publicId: Date.now(),
   });
   return createdPoll;
+}
+
+export async function editPoll({ id, title, desc, categories }) {
+  const pollRef = doc(db, 'poll', id);
+  const fetched = await updateDoc(pollRef, {
+    title,
+    desc,
+    categories,
+  });
+  return fetched;
 }
