@@ -162,9 +162,17 @@ export default function PollEdit() {
         투표로 돌아가기
       </button>
       <div className="w-full flex flex-col justify-center items-center">
-        <div>
-          <input ref={pollNameRef} placeholder="투표이름"></input>
-          <input ref={pollDescRef} placeholder="어떤 투표인지 설명"></input>
+        <div className="flex flex-col w-72 pt-4 space-y-2">
+          <input
+            className="text-black"
+            ref={pollNameRef}
+            placeholder="투표이름"
+          ></input>
+          <input
+            className="text-black"
+            ref={pollDescRef}
+            placeholder="어떤 투표인지 설명"
+          ></input>
         </div>
         {isLoaded ? (
           items.map((item: any, i: number) => {

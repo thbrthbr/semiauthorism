@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { IoIosClose } from 'react-icons/io';
 import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
+import Poll from '../component/poll';
 
 export default function Home() {
   const [polls, setPolls] = useState<any>([]);
@@ -35,7 +36,7 @@ export default function Home() {
   }, []);
   return (
     <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
-      <div>여기에투표화면구현</div>
+      <Poll data={pod} />
       <button onClick={auth}>투표 만들러 가기</button>
       <button
         onClick={() => {
