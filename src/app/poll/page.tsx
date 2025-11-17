@@ -10,25 +10,28 @@ import Spinner from '@/component/spinner';
 import defaultImg from '../../asset/no-image.png';
 
 export default function Poll() {
-  const [loading, setLoading] = useState(true);
-  const [location, setLocation] = useState({
-    x: -1,
-    y: -1,
-  });
-  const [modSwitch, setModSwitch] = useState<any>([]);
-  const [isOpened, setIsOpened] = useState(false);
-  const [datas, setDatas] = useState<any>([]);
   const [items, setItems] = useState<any>([]);
   const [protoItems, setProtoItems] = useState<any>([]);
-  const [modal, setModal] = useState<boolean>(false);
-  // const [originTitle, setOriginTitle] = useState('')
-  // const [tempTitle, setTempTitle] = useState('')
-  const pwRef = useRef<any>(null);
+  const [locked, setLocked] = useState<boolean>(true);
   const pollNameRef = useRef<any>(null);
   const pollDescRef = useRef<any>(null);
   const pollDupRef = useRef<any>(null);
   const router = useRouter();
 
+  const auth = async () => {
+    const prompt = window.prompt('비밀번호를 입력하세요');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/pw`, {
+      method: 'POST',
+      body: JSON.stringify({
+        pw: prompt,
+      }),
+      cache: 'no-store',
+    });
+    const final = await res.json();
+    if (final.message == 'OK') {
+      setLocked(false);
+    }
+  };
   // const insertPW = () => {
   //   if (pwRef.current) {
   //     if (pwRef.current.value == process.env.NEXT_PUBLIC_PW) {
@@ -42,150 +45,28 @@ export default function Poll() {
   //   }
   // }
 
-  const openForAWhile = () => {
-    const item = localStorage.getItem('semiauthorism');
-    if (item) {
-      const parsed = JSON.parse(item);
-      const currentTime = Date.now();
-      if (parsed.expiresAt > currentTime) {
-        setIsOpened(parsed.value);
-      } else {
-        localStorage.removeItem('semiauthorism');
-      }
-    }
-  };
-
-  const addTXT = async () => {
-    try {
-      let file: any = document.createElement('input');
-      file.type = 'file';
-      file.addEventListener('change', async () => {
-        if (file.files[0].type !== 'text/plain') {
-          alert('txt 파일만 올릴 수 있습니다');
-          return;
-        }
-        const fileName = file.files[0].name;
-        const fileRef = ref(storage, `texts/${fileName}.txt`);
-        await uploadBytes(fileRef, file.files[0]).then(async (snapshot) => {
-          getDownloadURL(snapshot.ref).then(async (downUrl) => {
-            const brought = await fetch(
-              `${process.env.NEXT_PUBLIC_SITE}/api/text`,
-              {
-                method: 'POST',
-                body: JSON.stringify({
-                  title: fileName,
-                  path: downUrl,
-                  order: Date.now(),
-                  realTitle: fileName,
-                }),
-                cache: 'no-store',
-              },
-            );
-            const final = await brought.json();
-            const semi = datas.slice(0);
-            semi.unshift(final.data);
-            setDatas(semi);
-            setLocation({
-              x: -1,
-              y: -1,
-            });
-          });
-        });
-      });
-      file.click();
-    } catch (e) {}
-  };
-
-  const makeTXTfile = () => {
-    return new Blob([''], { type: 'text/plain;charset=utf-8' });
-  };
-
-  const addWritten = async () => {
-    const file = makeTXTfile();
-    const fileName = `untitled${Date.now()}`;
-    const fileRef = ref(storage, `texts/${fileName}.txt`);
-    await uploadBytes(fileRef, file).then(async (snapshot) => {
-      getDownloadURL(snapshot.ref).then(async (downUrl) => {
-        const brought = await fetch(
-          `${process.env.NEXT_PUBLIC_SITE}/api/text`,
-          {
-            method: 'POST',
-            body: JSON.stringify({
-              title: fileName,
-              path: downUrl,
-              order: Date.now(),
-              realTitle: fileName,
-            }),
-            cache: 'no-store',
-          },
-        );
-        const final = await brought.json();
-        const semi = datas.slice(0);
-        semi.unshift(final.data);
-        setDatas(semi);
-      });
-    });
-  };
-
-  const getWritten = async () => {
-    const result = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/text`, {
-      method: 'GET',
-      cache: 'no-store',
-    });
-    const texts = await result.json();
-    const sorted = texts.data
-      .sort((x: any, y: any) => x.order - y.order)
-      .reverse();
-    setDatas(sorted);
-    setLoading(false);
-  };
-
-  const enterText = (each: string) => {
-    router.push(`/text/${each}`);
-  };
-
-  const deleteWritten = async (id: string) => {
-    const willYou = window.confirm('해당 텍스트를 삭제하시겠습니까');
-    if (willYou) {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SITE}/api/text/delete`,
-        {
-          method: 'DELETE',
-          body: JSON.stringify({
-            id,
-          }),
-          cache: 'no-store',
-        },
-      );
-      const final = await res.json();
-      if (final.message == '삭제 성공') {
-        const temp = [];
-        for (let i = 0; i < datas.length; i++) {
-          if (datas[i].id !== id) {
-            temp.push(datas[i]);
-          }
-        }
-        setDatas(temp);
-      }
-    }
-  };
-
-  const editTitle = async (id: string, newTitle: string) => {
-    await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/text/edit-title`, {
-      method: 'POST',
-      body: JSON.stringify({
-        id,
-        newTitle,
-      }),
-      cache: 'no-store',
-    });
-  };
+  // const openForAWhile = () => {
+  //   const item = localStorage.getItem('semiauthorism');
+  //   if (item) {
+  //     const parsed = JSON.parse(item);
+  //     const currentTime = Date.now();
+  //     if (parsed.expiresAt > currentTime) {
+  //       setLocked(parsed.value);
+  //     } else {
+  //       localStorage.removeItem('semiauthorism');
+  //     }
+  //   }
+  // };
 
   // @@@@@@@@@@@@@@@@@@@@@@@@
 
   const createPoll = async () => {
     if (!pollNameRef.current.value || !pollDescRef.current.value) {
       alert('투표의 제목과 설명을 적어주세요');
+      return;
+    }
+    if (items.length < 2) {
+      alert('투표대상을 최소 2개를 지정해주세요');
       return;
     }
     const item = [...items];
@@ -290,15 +171,9 @@ export default function Poll() {
     setItems(temp);
   };
 
-  const getVote = () => {};
-
-  const addVote = () => {};
-
   useEffect(() => {
-    openForAWhile();
+    auth();
   }, []);
-
-  useEffect(() => {}, []);
 
   return (
     <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
@@ -309,107 +184,109 @@ export default function Poll() {
       >
         투표로 돌아가기
       </button>
-      <div className="w-full flex flex-col justify-center items-center">
+      {locked === false && (
         <div className="w-full flex flex-col justify-center items-center">
-          <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
-            <input
-              className="text-black"
-              ref={pollNameRef}
-              placeholder="투표이름"
-            ></input>
-            <input
-              className="text-black"
-              ref={pollDescRef}
-              placeholder="어떤 투표인지 설명"
-            ></input>
-            <div>중복 허용 최대 개수</div>
-            <input
-              ref={pollDupRef}
-              className="text-black"
-              type="number"
-              min="1"
-            ></input>
-          </div>
-        </div>
-        {items.map((item: any, i: number) => {
-          return (
-            <div className="w-72 flex flex-col m-5" key={i}>
-              {item.editMode ? (
-                <div className="w-full flex flex-col">
-                  <img
-                    className="w-full"
-                    src={item.img === 'no-image' ? defaultImg.src : item.img}
-                  ></img>
-                  <button
-                    onClick={() => {
-                      changeImage(item.id);
-                    }}
-                  >
-                    이미지수정
-                  </button>
-                  <div className="w-full flex flex-col">
-                    이름 :{' '}
-                    <input
-                      onChange={(e) => {
-                        console.log(e.target.value);
-                        changeItem(items[i].id, 'title', e.target.value);
-                      }}
-                      value={item.title}
-                    ></input>
-                    설명 :{' '}
-                    <input
-                      onChange={(e) => {
-                        console.log(e.target);
-                        changeItem(item.id, 'desc', e.target.value);
-                      }}
-                      value={item.desc}
-                    ></input>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full flex">
-                  <img
-                    className="w-24 h-24"
-                    src={item.img === 'no-image' ? defaultImg.src : item.img}
-                  ></img>
-                  <div className="w-full flex flex-col justify-between m-4">
-                    <div>이름 : {item.title}</div>
-                    <div>미정 : {item.desc}</div>
-                  </div>
-                </div>
-              )}
-              <div className="w-full flex justify-between">
-                {items[i].editMode ? (
-                  <button
-                    onClick={() => {
-                      cancelEditMode(item.id);
-                    }}
-                  >
-                    취소
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      deleteItem(item.id);
-                    }}
-                  >
-                    삭제
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    changeEditMode(item.id);
-                  }}
-                >
-                  수정
-                </button>
-              </div>
+          <div className="w-full flex flex-col justify-center items-center">
+            <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
+              <input
+                className="text-black"
+                ref={pollNameRef}
+                placeholder="투표이름"
+              ></input>
+              <input
+                className="text-black"
+                ref={pollDescRef}
+                placeholder="어떤 투표인지 설명"
+              ></input>
+              <div>중복 허용 최대 개수</div>
+              <input
+                ref={pollDupRef}
+                className="text-black"
+                type="number"
+                min="1"
+              ></input>
             </div>
-          );
-        })}
-        <button onClick={addItem}>추가용</button>
-        <button onClick={createPoll}>투표생성</button>
-      </div>
+          </div>
+          {items.map((item: any, i: number) => {
+            return (
+              <div className="w-72 flex flex-col m-5" key={i}>
+                {item.editMode ? (
+                  <div className="w-full flex flex-col">
+                    <img
+                      className="w-full"
+                      src={item.img === 'no-image' ? defaultImg.src : item.img}
+                    ></img>
+                    <button
+                      onClick={() => {
+                        changeImage(item.id);
+                      }}
+                    >
+                      이미지수정
+                    </button>
+                    <div className="w-full flex flex-col">
+                      이름 :{' '}
+                      <input
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                          changeItem(items[i].id, 'title', e.target.value);
+                        }}
+                        value={item.title}
+                      ></input>
+                      설명 :{' '}
+                      <input
+                        onChange={(e) => {
+                          console.log(e.target);
+                          changeItem(item.id, 'desc', e.target.value);
+                        }}
+                        value={item.desc}
+                      ></input>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex">
+                    <img
+                      className="w-24 h-24"
+                      src={item.img === 'no-image' ? defaultImg.src : item.img}
+                    ></img>
+                    <div className="w-full flex flex-col justify-between m-4">
+                      <div>이름 : {item.title}</div>
+                      <div>미정 : {item.desc}</div>
+                    </div>
+                  </div>
+                )}
+                <div className="w-full flex justify-between">
+                  {items[i].editMode ? (
+                    <button
+                      onClick={() => {
+                        cancelEditMode(item.id);
+                      }}
+                    >
+                      취소
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        deleteItem(item.id);
+                      }}
+                    >
+                      삭제
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      changeEditMode(item.id);
+                    }}
+                  >
+                    수정
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+          <button onClick={addItem}>추가</button>
+          <button onClick={createPoll}>투표생성</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,9 @@
-import { addPoll, getTodaySetting, editPoll } from '@/firebase/firebaseConfig';
+import {
+  addPoll,
+  getTodaySetting,
+  editPoll,
+  editPod,
+} from '@/firebase/firebaseConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -12,20 +17,34 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { categories, title, desc, type, dup, pw } = await request.json();
+  const { id, pod } = await request.json();
   let response = {};
-  if (type == 'create') {
-    const addedPoll = await addPoll({
-      categories,
-      desc,
-      title,
-      pw,
-      dup,
-    });
-    response = {
-      message: '투표생성됨',
-      data: addedPoll,
-    };
-  }
+  const editedPod = await editPod({
+    id,
+    pod,
+  });
+  response = {
+    message: '메인투표수정됨',
+    data: editedPod,
+  };
   return Response.json(response, { status: 200 });
 }
+
+// export async function POST(request: NextRequest) {
+//   const { categories, title, desc, type, dup, pw } = await request.json();
+//   let response = {};
+//   if (type == 'create') {
+//     const addedPoll = await addPoll({
+//       categories,
+//       desc,
+//       title,
+//       pw,
+//       dup,
+//     });
+//     response = {
+//       message: '투표생성됨',
+//       data: addedPoll,
+//     };
+//   }
+//   return Response.json(response, { status: 200 });
+// }

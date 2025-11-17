@@ -214,6 +214,15 @@ export async function editPoll({ id, title, desc, dup, categories }) {
   return fetched;
 }
 
+export async function editPod({ id, pod }) {
+  console.log(id);
+  const pollRef = doc(db, 'poll-of-today', id);
+  const fetched = await updateDoc(pollRef, {
+    pod,
+  });
+  return fetched;
+}
+
 export async function addVote({ id, vote }) {
   const pollRef = doc(db, 'poll', id);
   const snapshot = await getDoc(pollRef);

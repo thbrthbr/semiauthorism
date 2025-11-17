@@ -38,14 +38,14 @@ export default function Home() {
   return (
     <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
       <Poll data={pod} />
-      <button onClick={auth}>투표 만들러 가기</button>
+      {/* <button onClick={auth}>투표 만들러 가기</button>
       <button
         onClick={() => {
           router.push('/poll');
         }}
       >
         임시생성버튼
-      </button>
+      </button> */}
     </div>
   );
 }

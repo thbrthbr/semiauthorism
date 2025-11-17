@@ -24,17 +24,17 @@ export default function Poll({ data }: any) {
 
   const vote = async () => {
     const temp = [...selected];
-    if (
-      localStorage.getItem(
-        '공정한 투표를 위해 조작행위는 삼가부탁드려요!! ㅠㅠ',
-      )
-    ) {
+    if (temp.length < 1) {
+      alert('최소 하나의 항목을 골라주세요!');
+      return;
+    }
+    if (localStorage.getItem(`${data.id}`)) {
       alert('이미 투표하셨습니다!');
       return;
     } else {
       localStorage.setItem(
+        `${data.id}`,
         '공정한 투표를 위해 조작행위는 삼가부탁드려요!! ㅠㅠ',
-        'true',
       );
       const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/vote`, {
         method: 'POST',
@@ -44,25 +44,23 @@ export default function Poll({ data }: any) {
         }),
         cache: 'no-store',
       });
-      alert('투표완료! 가까운 시일 내 결과가 공개됩니다!');
+      alert('투표완료! 가까운 시일 내 최종결과가 공개됩니다!');
       router.push(`/result/${data.publicId}`);
     }
   };
 
   useEffect(() => {
-    if (
-      localStorage.getItem(
-        '공정한 투표를 위해 조작행위는 삼가부탁드려요!! ㅠㅠ',
-      )
-    ) {
-      setVoted(true);
+    if (data) {
+      if (localStorage.getItem(`${data.id}`)) {
+        setVoted(true);
+      }
     }
-  }, [voted]);
+  }, [data]);
 
   return (
     data && (
       <div className="m-8 justify-center flex flex-col">
-        <div className="text-sm w-full justify-center flex">{data.title}</div>
+        <div className="text-6xl w-full justify-center flex">{data.title}</div>
         {data?.categories.map((item: any) => {
           console.log(item);
           return (
@@ -82,18 +80,31 @@ export default function Poll({ data }: any) {
         })}
         <br></br>
         {voted ? (
-          <div className="px-4 py-2 bg-gray-800 text-center text-white font-semibold rounded-lg shadow-md">
-            투표완료
+          <div className="w-full">
+            <div className="px-4 py-2 bg-gray-800 text-center text-white font-semibold rounded-lg shadow-md">
+              투표완료
+            </div>
+            <br></br>
+            <button
+              onClick={() => {
+                router.push(`/result/${data.publicId}`);
+              }}
+              className="w-full px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+            hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
+            >
+              결과현황 보러가기
+            </button>
           </div>
         ) : (
           <button
             onClick={vote}
             className="px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
-        hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
+            hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
           >
             투표하기
           </button>
         )}
+        <br></br>
       </div>
     )
   );
