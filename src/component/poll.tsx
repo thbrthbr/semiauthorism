@@ -59,7 +59,7 @@ export default function Poll({ data }: any) {
 
   return (
     data && (
-      <div className="m-8 justify-center flex flex-col">
+      <div className="w-full m-8 justify-center items-center flex flex-col">
         <div className="text-6xl w-full justify-center flex">{data.title}</div>
         {data?.categories.map((item: any) => {
           console.log(item);
@@ -80,7 +80,7 @@ export default function Poll({ data }: any) {
         })}
         <br></br>
         {voted ? (
-          <div className="w-full">
+          <div className="w-72">
             <div className="px-4 py-2 bg-gray-800 text-center text-white font-semibold rounded-lg shadow-md">
               투표완료
             </div>
@@ -98,7 +98,7 @@ export default function Poll({ data }: any) {
         ) : (
           <button
             onClick={vote}
-            className="px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+            className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
           >
             투표하기

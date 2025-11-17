@@ -40,13 +40,6 @@ export default function PollEdit() {
   }, []);
   return (
     <div className="w-full flex jutify-center items-center flex-col text-white">
-      <button
-        onClick={() => {
-          router.push(`/`);
-        }}
-      >
-        투표로 돌아가기
-      </button>
       {items &&
         items.poll.map((item: any) => {
           const eachPer =
@@ -68,6 +61,15 @@ export default function PollEdit() {
             </div>
           );
         })}
+      <br></br>
+      <button
+        onClick={() => {
+          router.push(`/`);
+        }}
+      >
+        투표로 돌아가기
+      </button>
+      <br></br>
     </div>
   );
 }

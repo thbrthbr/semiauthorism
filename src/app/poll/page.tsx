@@ -66,7 +66,7 @@ export default function Poll() {
       return;
     }
     if (items.length < 2) {
-      alert('투표대상을 최소 2개를 지정해주세요');
+      alert('투표대상을 최소 2개를 생성해주세요');
       return;
     }
     const item = [...items];
@@ -226,6 +226,7 @@ export default function Poll() {
                     <div className="w-full flex flex-col">
                       이름 :{' '}
                       <input
+                        className="text-black"
                         onChange={(e) => {
                           console.log(e.target.value);
                           changeItem(items[i].id, 'title', e.target.value);
@@ -234,6 +235,7 @@ export default function Poll() {
                       ></input>
                       설명 :{' '}
                       <input
+                        className="text-black"
                         onChange={(e) => {
                           console.log(e.target);
                           changeItem(item.id, 'desc', e.target.value);
