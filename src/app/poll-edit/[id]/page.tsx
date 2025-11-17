@@ -16,17 +16,22 @@ export default function PollEdit() {
   const [protoItems, setProtoItems] = useState<any>([]);
   const pollNameRef = useRef<any>(null);
   const pollDescRef = useRef<any>(null);
+  const pollDupRef = useRef<any>(null);
   const isMounted = useRef<any>(false);
   const router = useRouter();
 
   const getPoll = async () => {
-    const result = await fetch(`/api/poll/${param.id}`, {
-      method: 'GET',
-      cache: 'no-store',
-    });
+    const result = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE}/api/poll/${param.id}`,
+      {
+        method: 'GET',
+        cache: 'no-store',
+      },
+    );
     const final = await result.json();
     pollNameRef.current.value = final.data[0].title;
     pollDescRef.current.value = final.data[0].desc;
+    pollDupRef.current.value = Number(final.data[0].dup);
     const itemArr = JSON.parse(final.data[0].categories);
     setItems(itemArr);
     setProtoItems(itemArr.map((item: any) => ({ ...item, editMode: false })));
@@ -47,6 +52,7 @@ export default function PollEdit() {
           type: 'edit',
           title: pollNameRef.current.value,
           desc: pollDescRef.current.value,
+          dup: pollDupRef.current.value,
           categories: send,
         }),
         cache: 'no-store',
@@ -162,7 +168,7 @@ export default function PollEdit() {
         투표로 돌아가기
       </button>
       <div className="w-full flex flex-col justify-center items-center">
-        <div className="flex flex-col w-72 pt-4 space-y-2">
+        <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
           <input
             className="text-black"
             ref={pollNameRef}
@@ -172,6 +178,13 @@ export default function PollEdit() {
             className="text-black"
             ref={pollDescRef}
             placeholder="어떤 투표인지 설명"
+          ></input>
+          <div>중복 허용 최대 개수</div>
+          <input
+            ref={pollDupRef}
+            className="text-black"
+            type="number"
+            min="1"
           ></input>
         </div>
         {isLoaded ? (

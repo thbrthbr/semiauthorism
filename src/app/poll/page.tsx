@@ -26,6 +26,7 @@ export default function Poll() {
   const pwRef = useRef<any>(null);
   const pollNameRef = useRef<any>(null);
   const pollDescRef = useRef<any>(null);
+  const pollDupRef = useRef<any>(null);
   const router = useRouter();
 
   // const insertPW = () => {
@@ -196,6 +197,7 @@ export default function Poll() {
         type: 'create',
         title: pollNameRef.current.value,
         desc: pollDescRef.current.value,
+        dup: pollDupRef.current.value,
         categories: send,
       }),
       cache: 'no-store',
@@ -309,7 +311,7 @@ export default function Poll() {
       </button>
       <div className="w-full flex flex-col justify-center items-center">
         <div className="w-full flex flex-col justify-center items-center">
-          <div className="flex flex-col w-72 pt-4 space-y-2">
+          <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
             <input
               className="text-black"
               ref={pollNameRef}
@@ -319,6 +321,13 @@ export default function Poll() {
               className="text-black"
               ref={pollDescRef}
               placeholder="어떤 투표인지 설명"
+            ></input>
+            <div>중복 허용 최대 개수</div>
+            <input
+              ref={pollDupRef}
+              className="text-black"
+              type="number"
+              min="1"
             ></input>
           </div>
         </div>

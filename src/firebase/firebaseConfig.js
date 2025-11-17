@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   getDocs,
+  getDoc,
   setDoc,
   deleteDoc,
   updateDoc,
@@ -121,6 +122,7 @@ export async function getTodaySetting() {
       id: doc.data()['id'],
       title: doc.data()['title'],
       voters: doc.data()['voters'],
+      dup: Number(doc.data()['dup']),
       publicId: doc.data()['publicId'],
     };
     fetchedPolls.push(poll);
@@ -146,6 +148,7 @@ export async function getPolls() {
       desc: doc.data()['desc'],
       id: doc.data()['id'],
       title: doc.data()['title'],
+      dup: Number(doc.data()['dup']),
       voters: doc.data()['voters'],
       publicId: doc.data()['publicId'],
     };
@@ -155,9 +158,16 @@ export async function getPolls() {
 }
 
 export async function getPoll({ id }) {
-  const querySnapshot = await getDocs(
-    query(collection(db, 'poll'), where('id', '==', id)),
-  );
+  let querySnapshot;
+  if (/^-?\d+(\.\d+)?$/.test(id)) {
+    querySnapshot = await getDocs(
+      query(collection(db, 'poll'), where('publicId', '==', Number(id))),
+    );
+  } else {
+    querySnapshot = await getDocs(
+      query(collection(db, 'poll'), where('id', '==', id)),
+    );
+  }
   if (querySnapshot.empty) {
     return [];
   }
@@ -167,15 +177,17 @@ export async function getPoll({ id }) {
       categories: doc.data()['categories'],
       desc: doc.data()['desc'],
       id: doc.data()['id'],
+      dup: Number(doc.data()['dup']),
       title: doc.data()['title'],
       voters: doc.data()['voters'],
       publicId: doc.data()['publicId'],
     });
   });
+  console.log(fetchedPoll);
   return fetchedPoll;
 }
 
-export async function addPoll({ categories, desc, title, pw }) {
+export async function addPoll({ categories, desc, title, dup, pw }) {
   const newPoll = doc(collection(db, 'poll'));
   const voters = '[]';
   const createdPoll = await setDoc(newPoll, {
@@ -185,17 +197,41 @@ export async function addPoll({ categories, desc, title, pw }) {
     title,
     voters,
     desc,
+    dup,
     publicId: Date.now(),
   });
   return createdPoll;
 }
 
-export async function editPoll({ id, title, desc, categories }) {
+export async function editPoll({ id, title, desc, dup, categories }) {
   const pollRef = doc(db, 'poll', id);
   const fetched = await updateDoc(pollRef, {
     title,
     desc,
+    dup,
     categories,
+  });
+  return fetched;
+}
+
+export async function addVote({ id, vote }) {
+  const pollRef = doc(db, 'poll', id);
+  const snapshot = await getDoc(pollRef);
+  const currentData = JSON.parse(snapshot.data().categories);
+  const obj = vote.reduce((acc, cur) => {
+    acc[cur] = (acc[cur] || 0) + 1;
+    return acc;
+  }, {});
+  const updatedItems = currentData.map((item) => {
+    const add = obj[item.id] || 0;
+    return {
+      ...item,
+      percentage: item.percentage + add,
+    };
+  });
+  const final = JSON.stringify(updatedItems);
+  const fetched = await updateDoc(pollRef, {
+    categories: final,
   });
   return fetched;
 }

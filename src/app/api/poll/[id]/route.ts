@@ -9,6 +9,7 @@ interface RouteContext {
 
 export async function GET(request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
+  console.log(id);
   try {
     const fetchedPoll = await getPoll({ id });
 
@@ -60,8 +61,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 export async function POST(request: NextRequest, context: RouteContext) {
   const data = await request.json();
   const { id } = await context.params;
-  const { title, desc, categories } = data;
-  const result = await editPoll({ id, title, desc, categories });
+  const { title, desc, categories, dup } = data;
+  const result = await editPoll({ id, title, desc, categories, dup });
   if (result === null) {
     return new Response(null, { status: 204 });
   }

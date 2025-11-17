@@ -26,9 +26,10 @@ export default function Home() {
       cache: 'no-store',
     });
     const final = await result.json();
-    console.log(final);
     setPolls(final.data.polls.map((item: any) => JSON.parse(item.categories)));
-    setPod(final.data.pod);
+    const obj = final.data.pod;
+    obj.categories = JSON.parse(obj.categories);
+    setPod(obj);
   };
 
   useEffect(() => {

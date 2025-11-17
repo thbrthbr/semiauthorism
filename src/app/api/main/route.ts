@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { categories, title, desc, type, pw } = await request.json();
+  const { categories, title, desc, type, dup, pw } = await request.json();
   let response = {};
   if (type == 'create') {
     const addedPoll = await addPoll({
@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
       desc,
       title,
       pw,
+      dup,
     });
     response = {
       message: '투표생성됨',
