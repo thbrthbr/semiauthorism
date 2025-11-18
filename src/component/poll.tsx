@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Imag from './image';
 import { useRouter } from 'next/navigation';
 import { MdOutlineEdit } from 'react-icons/md';
+import ClickHeartArea from './heart';
+import ConfettiHeartArea from './heart';
 
 export default function Poll({ data }: any) {
   const [selected, setSelected] = useState<any>([]);
@@ -103,18 +105,19 @@ export default function Poll({ data }: any) {
         {data?.categories.map((item: any) => {
           console.log(item);
           return (
-            <button
-              onClick={() => {
-                selectHandler(item.id);
-              }}
-              key={item.id}
-              className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-sky-700' : 'border-white'}`}
-            >
-              <Imag source={item.img} />
-              <div className="text-4xl pdh">{item.title}</div>
-              <div className="text-[13px] ism">{item.desc}</div>
-              {/* <div>{item.percentage}표</div> */}
-            </button>
+            <ConfettiHeartArea heartCount={10} key={item.id}>
+              <button
+                onClick={() => {
+                  selectHandler(item.id);
+                }}
+                className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-pink-500' : 'border-white'}`}
+              >
+                <Imag source={item.img} />
+                <div className="text-4xl pdh">{item.title}</div>
+                <div className="text-[13px] ism">{item.desc}</div>
+                {/* <div>{item.percentage}표</div> */}
+              </button>
+            </ConfettiHeartArea>
           );
         })}
         <br></br>
