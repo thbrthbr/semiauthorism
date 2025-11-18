@@ -11,7 +11,7 @@ import defaultImg from '../../asset/no-image.png';
 import Imag from '@/component/image';
 import { PercentBar } from '@/component/bar';
 
-export default function PollEdit() {
+export default function Result() {
   const param = useParams();
   const router = useRouter();
   const [items, setItems] = useState<any>(null);
@@ -66,7 +66,7 @@ export default function PollEdit() {
         className="w-72 px-4 py-2 bg-blue-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
         onClick={() => {
-          router.push(`/`);
+          router.back();
         }}
       >
         투표로 돌아가기

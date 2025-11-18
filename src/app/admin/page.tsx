@@ -97,7 +97,7 @@ export default function Admin() {
 
           <button
             onClick={() => {
-              router.push('/poll');
+              router.push('/poll-create');
             }}
           >
             투표만들기

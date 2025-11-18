@@ -2,32 +2,32 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Spinner from '@/component/spinner';
-import Poll from '../component/poll';
+import Poll from '../../../component/poll';
 
 export default function Home() {
-  const [polls, setPolls] = useState<any>([]);
-  const [pod, setPod] = useState<any>(null);
+  const router = useRouter();
+  const param = useParams();
+  const [poll, setPoll] = useState<any>(null);
 
-  const getTodaySetting = async () => {
-    const result = await fetch(`/api/main`, {
+  const getPoll = async () => {
+    const result = await fetch(`/api/poll/${param.id}`, {
       method: 'GET',
       cache: 'no-store',
     });
     const final = await result.json();
-    setPolls(final.data.polls.map((item: any) => JSON.parse(item.categories))); // 게시판을 만든다면 사용
-    const obj = final.data.pod;
+    const obj = final.data[0];
     obj.categories = JSON.parse(obj.categories);
-    setPod(obj);
+    setPoll(obj);
   };
 
   useEffect(() => {
-    getTodaySetting();
+    getPoll();
   }, []);
   return (
     <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
-      <Poll data={pod} />
+      <Poll data={poll} />
     </div>
   );
 }

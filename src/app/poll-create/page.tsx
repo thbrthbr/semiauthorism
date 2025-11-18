@@ -9,7 +9,7 @@ import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import defaultImg from '../../asset/no-image.png';
 
-export default function Poll() {
+export default function PollCreate() {
   const [items, setItems] = useState<any>([]);
   const [protoItems, setProtoItems] = useState<any>([]);
   const [locked, setLocked] = useState<boolean>(true);
