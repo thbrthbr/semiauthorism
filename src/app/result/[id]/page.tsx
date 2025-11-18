@@ -53,9 +53,9 @@ export default function PollEdit() {
                 className={`px-2 py-2 overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 border-white`}
               >
                 <Imag source={item.img} />
-                <div className="text-2xl">{item.title}</div>
-                <div>{item.desc}</div>
-                <div>{item.percentage}표</div>
+                <div className="text-4xl pdh">{item.title}</div>
+                <div className="text-[13px] ism">{item.desc}</div>
+                <div className="text-[13px] ism">{item.percentage}표</div>
                 <PercentBar value={eachPer} />
               </div>
             </div>
@@ -63,6 +63,8 @@ export default function PollEdit() {
         })}
       <br></br>
       <button
+        className="w-72 px-4 py-2 bg-blue-800 text-white font-semibold rounded-lg shadow-md
+            hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
         onClick={() => {
           router.push(`/`);
         }}

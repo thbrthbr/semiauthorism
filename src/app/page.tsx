@@ -8,6 +8,7 @@ import { IoIosClose } from 'react-icons/io';
 import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import Poll from '../component/poll';
+import { MdOutlineEdit } from 'react-icons/md';
 
 export default function Home() {
   const [polls, setPolls] = useState<any>([]);
@@ -38,13 +39,13 @@ export default function Home() {
   return (
     <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
       <Poll data={pod} />
-      {/* <button onClick={auth}>투표 만들러 가기</button>
-      <button
+      {/* <button
         onClick={() => {
-          router.push('/poll');
+          router.push(`/poll-edit/${2}`);
         }}
+        className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-lg shadow-black/30"
       >
-        임시생성버튼
+        <MdOutlineEdit />
       </button> */}
     </div>
   );

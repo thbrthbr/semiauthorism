@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import Imag from './image';
 import { useRouter } from 'next/navigation';
+import { MdOutlineEdit } from 'react-icons/md';
 
 export default function Poll({ data }: any) {
   const [selected, setSelected] = useState<any>([]);
   const [voted, setVoted] = useState<boolean>(false);
+  const [editMode, setEditMode] = useState<boolean>(false);
   const router = useRouter();
 
   const selectHandler = (id: number) => {
@@ -20,6 +22,21 @@ export default function Poll({ data }: any) {
       }
     }
     setSelected(temp);
+  };
+
+  const editHandler = async () => {
+    const prompt = window.prompt('비밀번호를 입력하세요');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/pw`, {
+      method: 'POST',
+      body: JSON.stringify({
+        pw: prompt,
+      }),
+      cache: 'no-store',
+    });
+    const final = await res.json();
+    if (final.message == 'OK') {
+      router.push(`/poll-edit/${data.id}`);
+    }
   };
 
   const vote = async () => {
@@ -59,8 +76,30 @@ export default function Poll({ data }: any) {
 
   return (
     data && (
-      <div className="w-full m-8 justify-center items-center flex flex-col">
-        <div className="text-6xl w-full justify-center flex">{data.title}</div>
+      <div className="relative w-full m-8 justify-center items-center flex flex-col">
+        {/* <button
+          onClick={editHandler}
+          className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-lg shadow-black/30"
+        >
+          <MdOutlineEdit />
+        </button> */}
+        <div className="flex">
+          <div
+            onContextMenu={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setEditMode(!editMode);
+            }}
+            className="text-5xl w-full justify-center flex ism"
+          >
+            {data.title}
+          </div>
+          {editMode && (
+            <button onClick={editHandler}>
+              <MdOutlineEdit />
+            </button>
+          )}
+        </div>
         {data?.categories.map((item: any) => {
           console.log(item);
           return (
@@ -72,8 +111,8 @@ export default function Poll({ data }: any) {
               className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-sky-700' : 'border-white'}`}
             >
               <Imag source={item.img} />
-              <div className="text-2xl">{item.title}</div>
-              <div>{item.desc}</div>
+              <div className="text-4xl pdh">{item.title}</div>
+              <div className="text-[13px] ism">{item.desc}</div>
               {/* <div>{item.percentage}표</div> */}
             </button>
           );

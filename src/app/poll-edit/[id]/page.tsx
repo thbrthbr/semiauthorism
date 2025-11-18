@@ -170,15 +170,15 @@ export default function PollEdit() {
       <div className="w-full flex flex-col justify-center items-center">
         <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
           <input
-            className="text-black"
+            className="text-black w-full"
             ref={pollNameRef}
             placeholder="투표이름"
           ></input>
-          <input
-            className="text-black"
+          <textarea
+            className="text-black w-full"
             ref={pollDescRef}
             placeholder="어떤 투표인지 설명"
-          ></input>
+          ></textarea>
           <div>중복 허용 최대 개수</div>
           <input
             ref={pollDupRef}
@@ -215,14 +215,14 @@ export default function PollEdit() {
                         value={item.title}
                       ></input>
                       설명 :{' '}
-                      <input
+                      <textarea
                         className="text-black"
                         onChange={(e) => {
                           console.log(e.target);
                           changeItem(item.id, 'desc', e.target.value);
                         }}
                         value={item.desc}
-                      ></input>
+                      ></textarea>
                     </div>
                   </div>
                 ) : (
@@ -247,7 +247,13 @@ export default function PollEdit() {
                       취소
                     </button>
                   ) : (
-                    <div></div>
+                    <button
+                      onClick={() => {
+                        deleteItem(item.id);
+                      }}
+                    >
+                      삭제
+                    </button>
                   )}
                   <button
                     onClick={() => {
@@ -256,14 +262,6 @@ export default function PollEdit() {
                   >
                     수정
                   </button>
-
-                  {/* <button
-                  onClick={() => {
-                    deleteItem(item.id);
-                    }}
-                    >
-                    삭제
-                    </button> */}
                 </div>
               </div>
             );
@@ -271,6 +269,7 @@ export default function PollEdit() {
         ) : (
           <Spinner />
         )}
+        <button onClick={addItem}>추가</button>
         <button onClick={editPoll}>투표수정</button>
       </div>
     </div>

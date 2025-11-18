@@ -189,15 +189,15 @@ export default function Poll() {
           <div className="w-full flex flex-col justify-center items-center">
             <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
               <input
-                className="text-black"
+                className="text-black w-full"
                 ref={pollNameRef}
                 placeholder="투표이름"
               ></input>
-              <input
-                className="text-black"
+              <textarea
+                className="text-black w-full"
                 ref={pollDescRef}
                 placeholder="어떤 투표인지 설명"
-              ></input>
+              ></textarea>
               <div>중복 허용 최대 개수</div>
               <input
                 ref={pollDupRef}
@@ -234,14 +234,14 @@ export default function Poll() {
                         value={item.title}
                       ></input>
                       설명 :{' '}
-                      <input
+                      <textarea
                         className="text-black"
                         onChange={(e) => {
                           console.log(e.target);
                           changeItem(item.id, 'desc', e.target.value);
                         }}
                         value={item.desc}
-                      ></input>
+                      ></textarea>
                     </div>
                   </div>
                 ) : (
