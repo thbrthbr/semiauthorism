@@ -69,12 +69,13 @@ export default function Admin() {
               router.push('/');
             }}
           >
-            투표로 이동
+            메인투표로 이동
           </button>
+          <br></br>
+          <div>메인투표변경목록</div>
           <select
             className="text-black"
             onChange={(e) => {
-              console.log(e.currentTarget.value);
               setTarget(e.currentTarget.value);
             }}
           >
@@ -94,7 +95,27 @@ export default function Admin() {
           >
             메인투표변경
           </button>
-
+          <br></br>
+          <div>투표페이지이동</div>
+          <select
+            className="text-black"
+            onChange={(e) => {
+              if (e.currentTarget.value) {
+                router.push(`/poll/${e.currentTarget.value}`);
+              }
+            }}
+          >
+            <option key={'nothing'}>빈칸</option>
+            {items &&
+              items.map((item: any) => {
+                return (
+                  <option key={item.id} value={item.publicId}>
+                    {item.title}
+                  </option>
+                );
+              })}
+          </select>
+          <br></br>
           <button
             onClick={() => {
               router.push('/poll-create');

@@ -103,7 +103,6 @@ export default function Poll({ data }: any) {
           )}
         </div>
         {data?.categories.map((item: any) => {
-          console.log(item);
           return (
             <ConfettiHeartArea heartCount={10} key={item.id}>
               <button

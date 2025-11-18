@@ -25,13 +25,11 @@ export default function Result() {
       },
     );
     const final = await result.json();
-    console.log(final);
     let itemArr = JSON.parse(final?.data[0]?.categories);
     const real = itemArr.reduce((acc: any, cur: any) => {
       const votes = cur.percentage;
       return acc + votes;
     }, 0);
-    console.log(real);
     setItems({ poll: itemArr, total: real });
   };
 

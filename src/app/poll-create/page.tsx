@@ -228,7 +228,6 @@ export default function PollCreate() {
                       <input
                         className="text-black"
                         onChange={(e) => {
-                          console.log(e.target.value);
                           changeItem(items[i].id, 'title', e.target.value);
                         }}
                         value={item.title}
@@ -237,7 +236,6 @@ export default function PollCreate() {
                       <textarea
                         className="text-black"
                         onChange={(e) => {
-                          console.log(e.target);
                           changeItem(item.id, 'desc', e.target.value);
                         }}
                         value={item.desc}

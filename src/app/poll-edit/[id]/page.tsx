@@ -209,7 +209,6 @@ export default function PollEdit() {
                       <input
                         className="text-black"
                         onChange={(e) => {
-                          console.log(e.target.value);
                           changeItem(item.id, 'title', e.target.value);
                         }}
                         value={item.title}
@@ -218,7 +217,6 @@ export default function PollEdit() {
                       <textarea
                         className="text-black"
                         onChange={(e) => {
-                          console.log(e.target);
                           changeItem(item.id, 'desc', e.target.value);
                         }}
                         value={item.desc}

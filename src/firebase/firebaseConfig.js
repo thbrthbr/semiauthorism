@@ -183,7 +183,6 @@ export async function getPoll({ id }) {
       publicId: doc.data()['publicId'],
     });
   });
-  console.log(fetchedPoll);
   return fetchedPoll;
 }
 
@@ -215,7 +214,6 @@ export async function editPoll({ id, title, desc, dup, categories }) {
 }
 
 export async function editPod({ id, pod }) {
-  console.log(id);
   const pollRef = doc(db, 'poll-of-today', id);
   const fetched = await updateDoc(pollRef, {
     pod,
