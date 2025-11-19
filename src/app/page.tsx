@@ -9,6 +9,7 @@ import Poll from '../component/poll';
 export default function Home() {
   const [polls, setPolls] = useState<any>([]);
   const [pod, setPod] = useState<any>(null);
+  const [showPolls, setShowPolls] = useState<boolean>(false);
 
   const getTodaySetting = async () => {
     const result = await fetch(`/api/main`, {
@@ -16,7 +17,11 @@ export default function Home() {
       cache: 'no-store',
     });
     const final = await result.json();
-    setPolls(final.data.polls.map((item: any) => JSON.parse(item.categories))); // 게시판을 만든다면 사용
+    setPolls(
+      final.data.polls.map((item: any) => {
+        return { ...item, categories: JSON.parse(item.categories) };
+      }),
+    );
     const obj = final.data.pod;
     if (obj?.categories) {
       obj.categories = JSON.parse(obj.categories);
@@ -28,8 +33,24 @@ export default function Home() {
     getTodaySetting();
   }, []);
   return (
-    <div className="w-full relative text-white flex flex-col items-center justify-start h-screen">
+    <div className="w-full relative text-white flex flex-col items-center justify-start">
       {pod ? <Poll data={pod} /> : <Spinner />}
+      <button
+        onClick={() => {
+          setShowPolls(!showPolls);
+        }}
+        className="w-72 px-4 py-2 bg-white text-black font-semibold rounded-lg shadow-md
+          hover:bg-gray-200 active:scale-95 transition-transform duration-150 ease-out"
+      >
+        {showPolls ? '접기' : '다른 투표들 보기'}
+      </button>
+      {showPolls && (
+        <div className="py-4">
+          {polls?.map((poll: any) => {
+            return <div key={poll.id}>뭔데</div>;
+          })}
+        </div>
+      )}
     </div>
   );
 }

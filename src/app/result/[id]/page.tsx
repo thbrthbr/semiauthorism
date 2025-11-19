@@ -45,7 +45,7 @@ export default function Result() {
           e.stopPropagation();
           e.preventDefault();
         }}
-        className="text-5xl w-full justify-center flex ism"
+        className="text-5xl w-full justify-center flex ism italic"
       >
         {title}
       </div>
@@ -74,7 +74,7 @@ export default function Result() {
         })}
       <br></br>
       <button
-        className="w-72 px-4 py-2 bg-blue-800 text-white font-semibold rounded-lg shadow-md
+        className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
         onClick={() => {
           router.back();

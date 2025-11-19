@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import Header from '@/component/header';
+import Footer from '@/component/footer';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -15,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: '투표',
+  title: 'Pollism',
   description: '어디서든 쉽게 쉽게 투표!',
 };
 
@@ -27,10 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <Header />
-        <main className="pt-12">{children}</main>
+        <main className="flex-1 pt-12 pb-12">{children}</main>
+        <Footer />
       </body>
     </html>
   );

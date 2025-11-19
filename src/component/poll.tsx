@@ -95,7 +95,7 @@ export default function Poll({ data }: any) {
               e.preventDefault();
               setEditMode(!editMode);
             }}
-            className="text-5xl w-full justify-center italic flex jin text-stroke"
+            className="text-5xl w-full justify-center italic flex ism"
           >
             {data.title}
           </div>
@@ -155,7 +155,6 @@ export default function Poll({ data }: any) {
             </button>
           </>
         )}
-        <br></br>
       </div>
     )
   );

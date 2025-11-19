@@ -198,7 +198,7 @@ export default function PollEdit() {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="w-72 relative text-white flex flex-col items-center justify-start h-screen">
+      <div className="w-72 relative text-white flex flex-col items-center justify-start">
         <div className="w-full flex flex-row items-between justify-between">
           <button
             onClick={() => {
@@ -309,8 +309,20 @@ export default function PollEdit() {
           ) : (
             <Spinner />
           )}
-          <button onClick={addItem}>추가</button>
-          <button onClick={editPoll}>투표수정</button>
+          <button
+            className="w-72 px-4 py-2 text-white font-semibold rounded-lg border border-white/20"
+            onClick={addItem}
+          >
+            +
+          </button>
+          <br></br>
+          <button
+            className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+            hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
+            onClick={editPoll}
+          >
+            투표수정
+          </button>
         </div>
       </div>
     </div>

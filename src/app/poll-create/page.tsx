@@ -177,7 +177,7 @@ export default function PollCreate() {
   }, []);
 
   return (
-    <div className="w-full relative text-white flex flex-col items-center justify-start h-screen">
+    <div className="w-full relative text-white flex flex-col items-center justify-start">
       <button
         onClick={() => {
           router.push('/');
@@ -305,8 +305,19 @@ export default function PollCreate() {
               );
             })}{' '}
           </Reorder.Group>
-          <button onClick={addItem}>추가</button>
-          <button onClick={createPoll}>투표생성</button>
+          <button
+            className="w-72 px-4 py-2 m-5 text-white font-semibold rounded-lg border border-white/20"
+            onClick={addItem}
+          >
+            +
+          </button>
+          <button
+            className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+            hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
+            onClick={createPoll}
+          >
+            투표생성
+          </button>
         </div>
       )}
     </div>
