@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@tailwindcss/line-clamp": "^0.4.4",
     "firebase": "^11.0.2",
     "motion": "^11.15.0",

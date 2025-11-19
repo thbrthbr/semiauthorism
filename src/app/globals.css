@@ -3,20 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #d34e4e;
+  --foreground: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #e49ba6;
     --foreground: #ededed;
   }
 }
 
 body {
   color: var(--foreground);
-  background: black;
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -75,6 +75,17 @@ body {
   font-family: 'Isamanru', sans-serif;
 }
 
+.gian {
+  font-family: 'GiantsInline', sans-serif;
+}
+
+.noselect {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 @font-face {
   font-family: 'Lobster';
   src: url('../../public/fonts/Lobster-Regular.ttf') format('truetype');
@@ -111,5 +122,13 @@ body {
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicLight.woff')
     format('woff');
   font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GiantsInline';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Inline.woff2')
+    format('woff2');
+  font-weight: normal;
   font-display: swap;
 }

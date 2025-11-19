@@ -28,88 +28,15 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-export async function addText({ title, path, order, realTitle }) {
-  const newReplay = doc(collection(db, 'text'));
-  await setDoc(newReplay, {
-    id: newReplay.id,
-    title,
-    realTitle,
-    path,
-    order,
-  });
-  return {
-    id: newReplay.id,
-    title,
-    path,
-    order,
-    realTitle,
-  };
-}
-
-export async function getTexts() {
-  const querySnapshot = await getDocs(query(collection(db, 'text')));
-  if (querySnapshot.empty) {
-    return [];
-  }
-  const fetchedReplays = [];
-  querySnapshot.forEach((doc) => {
-    const aTodo = {
-      id: doc.id,
-      realTitle: doc.data()['realTitle'],
-      title: doc.data()['title'],
-      path: doc.data()['path'],
-      order: doc.data()['order'],
-    };
-    fetchedReplays.push(aTodo);
-  });
-  return fetchedReplays;
-}
-
-export async function getSpecificText(id) {
-  const querySnapshot = await getDocs(
-    query(collection(db, 'text'), where('id', '==', id)),
-  );
-  if (querySnapshot.empty) {
-    return [];
-  }
-  const fetchedTexts = [];
-  querySnapshot.forEach((doc) => {
-    fetchedTexts.push({
-      id: doc.id,
-      title: doc.data()['title'],
-      realTitle: doc.data()['realTitle'],
-      path: doc.data()['path'],
-      order: doc.data()['order'],
-    });
-  });
-  return fetchedTexts;
-}
-
-export async function editSpecificTitle({ id, newTitle }) {
-  const todoRef = doc(db, 'text', id);
-  const fetched = await updateDoc(todoRef, {
-    realTitle: newTitle,
-  });
-  return fetched;
-}
-
-export async function deleteSpecificText(id) {
-  await deleteDoc(doc(db, 'text', id));
-  return { status: '성공' };
-}
-
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
 export async function getTodaySetting() {
   const querySnapshot = await getDocs(query(collection(db, 'poll-of-today')));
-  if (querySnapshot.empty) {
-    return [];
-  }
-  const setting = { pod: {}, polls: [] };
   let pod = '';
-  querySnapshot.forEach((doc) => {
-    pod = doc.data()['pod'];
-  });
+  const setting = { pod: {}, polls: [] };
+  if (!querySnapshot.empty) {
+    querySnapshot.forEach((doc) => {
+      pod = doc.data()['pod'];
+    });
+  }
   const querySnapshot2 = await getDocs(query(collection(db, 'poll')));
   if (querySnapshot.empty) {
     return [];
@@ -132,6 +59,9 @@ export async function getTodaySetting() {
   });
 
   setting.polls = fetchedPolls;
+  if (!setting.pod.id) {
+    setting.pod = null;
+  }
 
   return setting;
 }
@@ -222,29 +152,39 @@ export async function editPod({ id, pod }) {
 }
 
 export async function deletePoll(id) {
-  console.log(id);
   await deleteDoc(doc(db, 'poll', id));
   return { status: '성공' };
 }
 
-export async function addVote({ id, vote }) {
+export async function addVote({ id, vote, voter }) {
   const pollRef = doc(db, 'poll', id);
   const snapshot = await getDoc(pollRef);
   const currentData = JSON.parse(snapshot.data().categories);
-  const obj = vote.reduce((acc, cur) => {
-    acc[cur] = (acc[cur] || 0) + 1;
-    return acc;
-  }, {});
-  const updatedItems = currentData.map((item) => {
-    const add = obj[item.id] || 0;
+  let newVoters = [...JSON.parse(snapshot.data().voters)];
+  const isVoted = newVoters.find((n) => n === voter);
+  if (isVoted === undefined) {
+    const obj = vote.reduce((acc, cur) => {
+      acc[cur] = (acc[cur] || 0) + 1;
+      return acc;
+    }, {});
+    const updatedItems = currentData.map((item) => {
+      const add = obj[item.id] || 0;
+      return {
+        ...item,
+        percentage: item.percentage + add,
+      };
+    });
+    const final = JSON.stringify(updatedItems);
+    newVoters.push(voter);
+    await updateDoc(pollRef, {
+      categories: final,
+      voters: JSON.stringify(newVoters),
+    });
     return {
-      ...item,
-      percentage: item.percentage + add,
+      categories: final,
+      voters: JSON.stringify(newVoters),
     };
-  });
-  const final = JSON.stringify(updatedItems);
-  const fetched = await updateDoc(pollRef, {
-    categories: final,
-  });
-  return fetched;
+  } else {
+    return null;
+  }
 }

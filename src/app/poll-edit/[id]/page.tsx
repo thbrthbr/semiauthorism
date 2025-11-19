@@ -198,7 +198,7 @@ export default function PollEdit() {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="w-72 relative bg-black text-white flex flex-col items-center justify-start h-screen">
+      <div className="w-72 relative text-white flex flex-col items-center justify-start h-screen">
         <div className="w-full flex flex-row items-between justify-between">
           <button
             onClick={() => {

@@ -54,7 +54,7 @@ export const PercentBar: React.FC<PercentBarProps> = ({
     : '';
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-[95%] ${className}`}>
       <div
         className={`relative w-full bg-gray-200/70 dark:bg-gray-800/60 ${radius} overflow-hidden`}
         style={{ height }}

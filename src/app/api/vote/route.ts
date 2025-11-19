@@ -12,14 +12,26 @@ import { NextRequest, NextResponse } from 'next/server';
 // }
 
 export async function POST(request: NextRequest) {
-  const { id, vote } = await request.json();
-  const addedText = await addVote({
+  const { id, vote, voter } = await request.json();
+  const addedVote = await addVote({
     id,
     vote,
+    voter,
   });
   const response = {
     message: '무라사키',
-    data: addedText,
+    data: addedVote,
   };
-  return Response.json(response, { status: 200 });
+  console.log(addedVote);
+  if (addedVote) {
+    return Response.json(response, { status: 200 });
+  } else {
+    return Response.json(
+      {
+        message: '이미투표함',
+        data: null,
+      },
+      { status: 200 },
+    );
+  }
 }

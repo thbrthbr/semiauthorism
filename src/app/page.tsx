@@ -18,16 +18,18 @@ export default function Home() {
     const final = await result.json();
     setPolls(final.data.polls.map((item: any) => JSON.parse(item.categories))); // 게시판을 만든다면 사용
     const obj = final.data.pod;
-    obj.categories = JSON.parse(obj.categories);
-    setPod(obj);
+    if (obj?.categories) {
+      obj.categories = JSON.parse(obj.categories);
+      setPod(obj);
+    }
   };
 
   useEffect(() => {
     getTodaySetting();
   }, []);
   return (
-    <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
-      <Poll data={pod} />
+    <div className="w-full relative text-white flex flex-col items-center justify-start h-screen">
+      {pod ? <Poll data={pod} /> : <Spinner />}
     </div>
   );
 }

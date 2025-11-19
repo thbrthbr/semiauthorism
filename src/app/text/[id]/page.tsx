@@ -1,120 +1,120 @@
-'use client'
+'use client';
 
-import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { ref, uploadString } from 'firebase/storage'
-import { storage } from '@/firebase/firebaseConfig'
-import { FaArrowLeft, FaArrowDown, FaRegSave } from 'react-icons/fa'
-import Spinner from '@/component/spinner'
-import { LuDownload } from 'react-icons/lu'
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { ref, uploadString } from 'firebase/storage';
+import { storage } from '@/firebase/firebaseConfig';
+import { FaArrowLeft, FaArrowDown, FaRegSave } from 'react-icons/fa';
+import Spinner from '@/component/spinner';
+import { LuDownload } from 'react-icons/lu';
 
 export default function Text() {
-  const router = useRouter()
-  const param = useParams()
-  const contentRef = useRef<any>(null)
-  const [path, setPath] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [original, setOriginal] = useState('')
-  const [txtTitle, setTxtTitle] = useState('')
+  const router = useRouter();
+  const param = useParams();
+  const contentRef = useRef<any>(null);
+  const [path, setPath] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [original, setOriginal] = useState('');
+  const [txtTitle, setTxtTitle] = useState('');
 
   const getContent = async () => {
     if (param) {
       const result = await fetch(`/api/text/${param.id}`, {
         method: 'GET',
         cache: 'no-store',
-      })
-      const final = await result.json()
-      const path = final.data[0].path
-      const response = await fetch(path)
-      const textContent = await response.text()
-      setPath(final.data[0].title)
-      setOriginal(textContent)
-      if (contentRef.current) contentRef.current.value = textContent
-      setLoading(false)
-      setTxtTitle(final.data[0].realTitle)
+      });
+      const final = await result.json();
+      const path = final.data[0].path;
+      const response = await fetch(path);
+      const textContent = await response.text();
+      setPath(final.data[0].title);
+      setOriginal(textContent);
+      if (contentRef.current) contentRef.current.value = textContent;
+      setLoading(false);
+      setTxtTitle(final.data[0].realTitle);
     }
-  }
+  };
 
   const downloadTXT = (e: any) => {
-    const willYou = window.confirm('텍스트 파일은 다운로드 하시겠습니까?')
+    const willYou = window.confirm('텍스트 파일은 다운로드 하시겠습니까?');
     if (willYou) {
       if (contentRef.current) {
         const blob = new Blob([contentRef.current.value], {
           type: 'text/plain',
-        })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.download = txtTitle
-        a.href = url
-        a.click()
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = txtTitle;
+        a.href = url;
+        a.click();
         setTimeout(() => {
-          window.URL.revokeObjectURL(url)
-        }, 100)
+          window.URL.revokeObjectURL(url);
+        }, 100);
       }
     }
-  }
+  };
 
   const editTXT = useCallback(async () => {
     if (contentRef.current) {
-      const fileRef = ref(storage, `texts/${path}.txt`)
+      const fileRef = ref(storage, `texts/${path}.txt`);
       await uploadString(fileRef, contentRef.current.value, 'raw', {
         contentType: 'text/plain;charset=utf-8',
-      })
-      alert('저장되었습니다')
-      setOriginal(contentRef.current.value)
+      });
+      alert('저장되었습니다');
+      setOriginal(contentRef.current.value);
     }
-  }, [path])
+  }, [path]);
 
   const handleSaveShortcut = useCallback(
     (event: KeyboardEvent) => {
       if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
-        event.preventDefault()
-        editTXT()
+        event.preventDefault();
+        editTXT();
       }
     },
     [editTXT],
-  )
+  );
 
   const handleTabKey = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Tab') {
-      event.preventDefault()
-      const target = event.target as HTMLTextAreaElement
-      const start = target.selectionStart
-      const tabSpace = '  '
-      target.focus()
+      event.preventDefault();
+      const target = event.target as HTMLTextAreaElement;
+      const start = target.selectionStart;
+      const tabSpace = '  ';
+      target.focus();
       // execCommand 써야 tab한 것에 대한 컨트롤 z가 제대로 작동함 -> 바꿀 수 있으면 나중에 바꿔보자
-      document.execCommand('insertText', false, `${tabSpace}`)
+      document.execCommand('insertText', false, `${tabSpace}`);
       setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + tabSpace.length
-      }, 0)
+        target.selectionStart = target.selectionEnd = start + tabSpace.length;
+      }, 0);
     }
-  }
+  };
 
   const handleBack = () => {
     if (contentRef.current) {
       if (contentRef.current.value !== original) {
         const confirm = window.confirm(
           '내용이 변경되었습니다. \n변경사항을 저장하지 않고 페이지를 이탈하시겠습니까?',
-        )
-        if (confirm) router.push('/')
-      } else router.push('/')
+        );
+        if (confirm) router.push('/');
+      } else router.push('/');
     }
-  }
+  };
 
   useEffect(() => {
-    getContent()
-    document.addEventListener('keydown', handleSaveShortcut)
+    getContent();
+    document.addEventListener('keydown', handleSaveShortcut);
     return () => {
-      document.removeEventListener('keydown', handleSaveShortcut)
-    }
-  }, [handleSaveShortcut])
+      document.removeEventListener('keydown', handleSaveShortcut);
+    };
+  }, [handleSaveShortcut]);
 
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center text-white">
         <Spinner />
       </div>
-    )
+    );
   }
 
   return (
@@ -142,8 +142,8 @@ export default function Text() {
       <textarea
         ref={contentRef}
         onKeyDown={handleTabKey}
-        className="relative h-screen overflow-y-scroll scrollbar outline-none bg-black m-4 text-white resize-none"
+        className="relative h-screen overflow-y-scroll scrollbar outline-none m-4 text-white resize-none"
       ></textarea>
     </div>
-  )
+  );
 }

@@ -79,6 +79,7 @@ export default function Admin() {
               setTarget(e.currentTarget.value);
             }}
           >
+            <option key={'nothing'}>빈칸</option>
             {items &&
               items.map((item: any) => {
                 return (

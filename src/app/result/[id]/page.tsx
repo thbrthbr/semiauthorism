@@ -14,6 +14,7 @@ import { PercentBar } from '@/component/bar';
 export default function Result() {
   const param = useParams();
   const router = useRouter();
+  const [title, setTitle] = useState<any>('');
   const [items, setItems] = useState<any>(null);
 
   const getPoll = async () => {
@@ -30,6 +31,7 @@ export default function Result() {
       const votes = cur.percentage;
       return acc + votes;
     }, 0);
+    setTitle(final?.data[0]?.title);
     setItems({ poll: itemArr, total: real });
   };
 
@@ -37,7 +39,16 @@ export default function Result() {
     getPoll();
   }, []);
   return (
-    <div className="w-full flex jutify-center items-center flex-col text-white">
+    <div className="p-8 w-full flex jutify-center items-center flex-col text-white">
+      <div
+        onContextMenu={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        className="text-5xl w-full justify-center flex ism"
+      >
+        {title}
+      </div>
       {items &&
         items.poll.map((item: any) => {
           const eachPer =
@@ -48,13 +59,15 @@ export default function Result() {
             <div key={item.id}>
               <div
                 key={item.id}
-                className={`px-2 py-2 overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 border-white`}
+                className={`overflow-hidden rounded-lg mt-4 w-72 flex flex-col items-center border-4 border-black`}
               >
                 <Imag source={item.img} />
-                <div className="text-4xl pdh">{item.title}</div>
-                <div className="text-[13px] ism">{item.desc}</div>
-                <div className="text-[13px] ism">{item.percentage}표</div>
-                <PercentBar value={eachPer} />
+                <div className="bg-black w-full py-4 space-y-2 flex justify-center flex-col items-center">
+                  <div className="text-4xl pdh">{item.title}</div>
+                  <div className="text-[13px] ism">{item.desc}</div>
+                  <div className="text-[13px] ism">{item.percentage}표</div>
+                  <PercentBar value={eachPer} />
+                </div>
               </div>
             </div>
           );

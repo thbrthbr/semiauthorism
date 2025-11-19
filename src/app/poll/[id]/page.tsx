@@ -26,7 +26,7 @@ export default function Home() {
     getPoll();
   }, []);
   return (
-    <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
+    <div className="w-full relative text-white flex flex-col items-center justify-start h-screen">
       <Poll data={poll} />
     </div>
   );

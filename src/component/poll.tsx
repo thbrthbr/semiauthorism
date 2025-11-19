@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { MdOutlineEdit } from 'react-icons/md';
 import ClickHeartArea from './heart';
 import ConfettiHeartArea from './heart';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 export default function Poll({ data }: any) {
   const [selected, setSelected] = useState<any>([]);
@@ -47,30 +48,38 @@ export default function Poll({ data }: any) {
       alert('최소 하나의 항목을 골라주세요!');
       return;
     }
-    if (localStorage.getItem(`${data.id}`)) {
+    if (localStorage.getItem(`voter:${data.publicId}`)) {
       alert('이미 투표하셨습니다!');
       return;
     } else {
-      localStorage.setItem(
-        `${data.id}`,
-        '공정한 투표를 위해 조작행위는 삼가부탁드려요!! ㅠㅠ',
-      );
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
       const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/vote`, {
         method: 'POST',
         body: JSON.stringify({
           id: data.id,
           vote: temp,
+          voter: result.visitorId,
         }),
         cache: 'no-store',
       });
-      alert('투표완료! 가까운 시일 내 최종결과가 공개됩니다!');
-      router.push(`/result/${data.publicId}`);
+
+      const final = await res.json();
+      if (final.message == '이미투표함') {
+        alert('이미 투표하셨습니다!');
+        localStorage.setItem(`voter:${data.publicId}`, result.visitorId);
+        router.push(`/result/${data.publicId}`);
+      } else {
+        alert('투표완료! 가까운 시일 내 최종결과가 공개됩니다!');
+        localStorage.setItem(`voter:${data.publicId}`, result.visitorId);
+        router.push(`/result/${data.publicId}`);
+      }
     }
   };
 
   useEffect(() => {
     if (data) {
-      if (localStorage.getItem(`${data.id}`)) {
+      if (localStorage.getItem(`voter:${data.publicId}`)) {
         setVoted(true);
       }
     }
@@ -79,12 +88,6 @@ export default function Poll({ data }: any) {
   return (
     data && (
       <div className="relative w-full m-8 justify-center items-center flex flex-col">
-        {/* <button
-          onClick={editHandler}
-          className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-lg shadow-black/30"
-        >
-          <MdOutlineEdit />
-        </button> */}
         <div className="flex">
           <div
             onContextMenu={(e) => {
@@ -112,11 +115,13 @@ export default function Poll({ data }: any) {
                 onClick={() => {
                   selectHandler(item.id);
                 }}
-                className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-pink-500' : 'border-white'} active:scale-95 transition-transform duration-200 ease-out`}
+                className={`overflow-hidden rounded-lg mt-4 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-white' : 'border-black'} active:scale-95 transition-transform duration-200 ease-out`}
               >
                 <Imag source={item.img} />
-                <div className="text-4xl pdh">{item.title}</div>
-                <div className="text-[13px] ism">{item.desc}</div>
+                <div className="bg-black w-full py-4 space-y-2 ">
+                  <div className="text-4xl pdh">{item.title}</div>
+                  <div className="text-[13px] ism">{item.desc}</div>
+                </div>
                 {/* <div>{item.percentage}표</div> */}
               </button>
             </ConfettiHeartArea>
@@ -125,7 +130,7 @@ export default function Poll({ data }: any) {
         <br></br>
         {voted ? (
           <div className="w-72">
-            <div className="px-4 py-2 bg-gray-800 text-center text-white font-semibold rounded-lg shadow-md">
+            <div className="px-4 py-2 bg-black text-center text-white font-semibold rounded-lg shadow-md">
               투표완료
             </div>
             <br></br>
@@ -140,13 +145,25 @@ export default function Poll({ data }: any) {
             </button>
           </div>
         ) : (
-          <button
-            onClick={vote}
-            className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+          <>
+            <button
+              onClick={vote}
+              className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
-          >
-            투표하기
-          </button>
+            >
+              투표하기
+            </button>
+            <button
+              onClick={async () => {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+
+                console.log(result.visitorId);
+              }}
+            >
+              테스트
+            </button>
+          </>
         )}
         <br></br>
       </div>
