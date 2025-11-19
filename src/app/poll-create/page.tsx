@@ -21,7 +21,7 @@ export default function PollCreate() {
 
   const auth = async () => {
     const prompt = window.prompt('비밀번호를 입력하세요');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/pw`, {
+    const res = await fetch(`api/pw`, {
       method: 'POST',
       body: JSON.stringify({
         pw: prompt,
@@ -72,7 +72,7 @@ export default function PollCreate() {
     }
     const item = [...items];
     const send = JSON.stringify(item);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll`, {
+    const res = await fetch(`/api/poll`, {
       method: 'POST',
       body: JSON.stringify({
         pw: 'temp',

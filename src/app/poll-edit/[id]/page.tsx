@@ -24,13 +24,10 @@ export default function PollEdit() {
   const router = useRouter();
 
   const getPoll = async () => {
-    const result = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE}/api/poll/${param.id}`,
-      {
-        method: 'GET',
-        cache: 'no-store',
-      },
-    );
+    const result = await fetch(`/api/poll/${param.id}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
     const final = await result.json();
     pollNameRef.current.value = final.data[0].title;
     pollDescRef.current.value = final.data[0].desc;
@@ -53,20 +50,17 @@ export default function PollEdit() {
     }
     const item = [...items];
     const send = JSON.stringify(item);
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE}/api/poll/${param.id}`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'edit',
-          title: pollNameRef.current.value,
-          desc: pollDescRef.current.value,
-          dup: pollDupRef.current.value,
-          categories: send,
-        }),
-        cache: 'no-store',
-      },
-    );
+    const res = await fetch(`/api/poll/${param.id}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'edit',
+        title: pollNameRef.current.value,
+        desc: pollDescRef.current.value,
+        dup: pollDupRef.current.value,
+        categories: send,
+      }),
+      cache: 'no-store',
+    });
 
     const final = await res.json();
     if (final.message == '투표수정됨') {
@@ -76,7 +70,7 @@ export default function PollEdit() {
   };
 
   const deletePoll = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll/${id}`, {
+    const res = await fetch(`/api/poll/${id}`, {
       method: 'DELETE',
       body: JSON.stringify({
         id: id,

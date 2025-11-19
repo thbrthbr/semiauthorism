@@ -12,7 +12,7 @@ export default function Admin() {
 
   const getPolls = async () => {
     auth();
-    const result = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/main`, {
+    const result = await fetch(`/api/main`, {
       method: 'GET',
       cache: 'no-store',
     });
@@ -25,7 +25,7 @@ export default function Admin() {
       alert('먼저 골라주세요');
       return;
     }
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/main`, {
+    const res = await fetch(`/api/main`, {
       method: 'POST',
       body: JSON.stringify({
         id: 'ASSIGN_ZERO',
@@ -41,7 +41,7 @@ export default function Admin() {
 
   const auth = async () => {
     const prompt = window.prompt('비밀번호를 입력하세요');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/pw`, {
+    const res = await fetch(`/api/pw`, {
       method: 'POST',
       body: JSON.stringify({
         pw: prompt,

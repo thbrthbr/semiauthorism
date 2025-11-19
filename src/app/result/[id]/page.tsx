@@ -18,13 +18,10 @@ export default function Result() {
   const [items, setItems] = useState<any>(null);
 
   const getPoll = async () => {
-    const result = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE}/api/poll/${param.id}`,
-      {
-        method: 'GET',
-        cache: 'no-store',
-      },
-    );
+    const result = await fetch(`/api/poll/${param.id}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
     const final = await result.json();
     let itemArr = JSON.parse(final?.data[0]?.categories);
     const real = itemArr.reduce((acc: any, cur: any) => {

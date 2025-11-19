@@ -29,7 +29,7 @@ export default function Poll({ data }: any) {
 
   const editHandler = async () => {
     const prompt = window.prompt('비밀번호를 입력하세요');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/pw`, {
+    const res = await fetch(`/api/pw`, {
       method: 'POST',
       body: JSON.stringify({
         pw: prompt,
@@ -54,7 +54,7 @@ export default function Poll({ data }: any) {
     } else {
       const fp = await FingerprintJS.load();
       const result = await fp.get();
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/vote`, {
+      const res = await fetch(`/api/vote`, {
         method: 'POST',
         body: JSON.stringify({
           id: data.id,
