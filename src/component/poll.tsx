@@ -147,6 +147,13 @@ export default function Poll({ data }: any) {
         ) : (
           <>
             <button
+              onClick={() => {
+                console.log(`${process.env.NEXT_PUBLIC_SITE}`);
+              }}
+            >
+              test
+            </button>
+            <button
               onClick={vote}
               className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
