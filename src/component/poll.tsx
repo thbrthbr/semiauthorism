@@ -95,7 +95,7 @@ export default function Poll({ data }: any) {
               e.preventDefault();
               setEditMode(!editMode);
             }}
-            className="text-5xl w-full justify-center flex ism"
+            className="text-5xl w-full justify-center italic flex jin text-stroke"
           >
             {data.title}
           </div>
@@ -152,16 +152,6 @@ export default function Poll({ data }: any) {
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
             >
               투표하기
-            </button>
-            <button
-              onClick={async () => {
-                const fp = await FingerprintJS.load();
-                const result = await fp.get();
-
-                console.log(result.visitorId);
-              }}
-            >
-              테스트
             </button>
           </>
         )}
