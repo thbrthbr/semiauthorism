@@ -106,10 +106,13 @@ export default function Poll({ data }: any) {
           return (
             <ConfettiHeartArea heartCount={10} key={item.id}>
               <button
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                }}
                 onClick={() => {
                   selectHandler(item.id);
                 }}
-                className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-pink-500' : 'border-white'}`}
+                className={`overflow-hidden rounded-lg mt-4 pb-2 space-y-2 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-pink-500' : 'border-white'} active:scale-95 transition-transform duration-200 ease-out`}
               >
                 <Imag source={item.img} />
                 <div className="text-4xl pdh">{item.title}</div>

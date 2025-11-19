@@ -8,6 +8,7 @@ import { IoIosClose } from 'react-icons/io';
 import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import defaultImg from '../../../asset/no-image.png';
+import { Reorder } from 'framer-motion';
 
 export default function PollEdit() {
   const param = useParams();
@@ -44,6 +45,10 @@ export default function PollEdit() {
   const editPoll = async () => {
     if (!pollNameRef.current.value || !pollDescRef.current.value) {
       alert('투표의 제목과 설명을 적어주세요');
+      return;
+    }
+    if (items.length < 2) {
+      alert('투표대상을 최소 2개를 생성해주세요');
       return;
     }
     const item = [...items];
@@ -165,6 +170,20 @@ export default function PollEdit() {
     setItems(temp);
   };
 
+  const handleReorder = (fromId: string, toId: string) => {
+    setItems((prev: any[]) => {
+      const arr = [...prev];
+      const fromIndex = arr.findIndex((it) => String(it.id) === fromId);
+      const toIndex = arr.findIndex((it) => String(it.id) === toId);
+
+      if (fromIndex === -1 || toIndex === -1) return prev;
+
+      const [moved] = arr.splice(fromIndex, 1);
+      arr.splice(toIndex, 0, moved);
+      return arr;
+    });
+  };
+
   useEffect(() => {
     getPoll();
   }, []);
@@ -183,7 +202,7 @@ export default function PollEdit() {
         <div className="w-full flex flex-row items-between justify-between">
           <button
             onClick={() => {
-              router.push('/');
+              router.push(`/poll/${publicId}`);
             }}
           >
             투표로 돌아가기
@@ -211,9 +230,22 @@ export default function PollEdit() {
             ></input>
           </div>
           {isLoaded ? (
-            items.map((item: any, i: number) => {
-              return (
-                <div className="w-72 flex flex-col m-5" key={i}>
+            <Reorder.Group axis="y" values={items} onReorder={setItems}>
+              {items.map((item: any) => (
+                <Reorder.Item
+                  key={item.id}
+                  value={item}
+                  className="w-72 flex flex-col m-5 cursor-grab active:cursor-grabbing rounded-md p-1 border border-white/20"
+                  whileDrag={{
+                    scale: 1.03,
+                    boxShadow: '0 12px 25px rgba(0,0,0,0.35)',
+                  }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: '0 0 0 rgba(0,0,0,0)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                >
                   {item.editMode ? (
                     <div className="w-full flex flex-col">
                       <img
@@ -221,31 +253,27 @@ export default function PollEdit() {
                         src={
                           item.img === 'no-image' ? defaultImg.src : item.img
                         }
-                      ></img>
-                      <button
-                        onClick={() => {
-                          changeImage(item.id);
-                        }}
-                      >
+                      />
+                      <button onClick={() => changeImage(item.id)}>
                         이미지수정
                       </button>
                       <div className="w-full flex flex-col">
-                        이름 :{' '}
+                        이름 :
                         <input
                           className="text-black"
-                          onChange={(e) => {
-                            changeItem(item.id, 'title', e.target.value);
-                          }}
+                          onChange={(e) =>
+                            changeItem(item.id, 'title', e.target.value)
+                          }
                           value={item.title}
-                        ></input>
-                        설명 :{' '}
+                        />
+                        설명 :
                         <textarea
                           className="text-black"
-                          onChange={(e) => {
-                            changeItem(item.id, 'desc', e.target.value);
-                          }}
+                          onChange={(e) =>
+                            changeItem(item.id, 'desc', e.target.value)
+                          }
                           value={item.desc}
-                        ></textarea>
+                        />
                       </div>
                     </div>
                   ) : (
@@ -255,42 +283,29 @@ export default function PollEdit() {
                         src={
                           item.img === 'no-image' ? defaultImg.src : item.img
                         }
-                      ></img>
+                      />
                       <div className="w-full flex flex-col justify-between m-4">
                         <div>이름 : {item.title}</div>
                         <div>미정 : {item.desc}</div>
                       </div>
                     </div>
                   )}
-                  <div className="w-full flex justify-between">
+
+                  <div className="w-full flex justify-between mt-2">
                     {item.editMode ? (
-                      <button
-                        onClick={() => {
-                          cancelEditMode(item.id);
-                        }}
-                      >
+                      <button onClick={() => cancelEditMode(item.id)}>
                         취소
                       </button>
                     ) : (
-                      <button
-                        onClick={() => {
-                          deleteItem(item.id);
-                        }}
-                      >
-                        삭제
-                      </button>
+                      <button onClick={() => deleteItem(item.id)}>삭제</button>
                     )}
-                    <button
-                      onClick={() => {
-                        changeEditMode(item.id);
-                      }}
-                    >
+                    <button onClick={() => changeEditMode(item.id)}>
                       수정
                     </button>
                   </div>
-                </div>
-              );
-            })
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
           ) : (
             <Spinner />
           )}

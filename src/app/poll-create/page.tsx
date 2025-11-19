@@ -8,6 +8,7 @@ import { IoIosClose } from 'react-icons/io';
 import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import defaultImg from '../../asset/no-image.png';
+import { Reorder } from 'framer-motion';
 
 export default function PollCreate() {
   const [items, setItems] = useState<any>([]);
@@ -207,82 +208,103 @@ export default function PollCreate() {
               ></input>
             </div>
           </div>
-          {items.map((item: any, i: number) => {
-            return (
-              <div className="w-72 flex flex-col m-5" key={i}>
-                {item.editMode ? (
-                  <div className="w-full flex flex-col">
-                    <img
-                      className="w-full"
-                      src={item.img === 'no-image' ? defaultImg.src : item.img}
-                    ></img>
-                    <button
-                      onClick={() => {
-                        changeImage(item.id);
-                      }}
-                    >
-                      이미지수정
-                    </button>
-                    <div className="w-full flex flex-col">
-                      이름 :{' '}
-                      <input
-                        className="text-black"
-                        onChange={(e) => {
-                          changeItem(items[i].id, 'title', e.target.value);
+          <Reorder.Group axis="y" values={items} onReorder={setItems}>
+            {items.map((item: any, i: number) => {
+              return (
+                <Reorder.Item
+                  key={item.id}
+                  value={item}
+                  className="w-72 flex flex-col m-5 cursor-grab active:cursor-grabbing rounded-md p-1 border border-white/20"
+                  whileDrag={{
+                    scale: 1.03,
+                    boxShadow: '0 12px 25px rgba(0,0,0,0.35)',
+                  }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: '0 0 0 rgba(0,0,0,0)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                >
+                  <div className="flex flex-col gap-3">
+                    {item.editMode ? (
+                      <div className="w-full flex flex-col">
+                        <img
+                          className="w-full"
+                          src={
+                            item.img === 'no-image' ? defaultImg.src : item.img
+                          }
+                        ></img>
+                        <button
+                          onClick={() => {
+                            changeImage(item.id);
+                          }}
+                        >
+                          이미지수정
+                        </button>
+                        <div className="w-full flex flex-col">
+                          이름 :{' '}
+                          <input
+                            className="text-black"
+                            onChange={(e) => {
+                              changeItem(items[i].id, 'title', e.target.value);
+                            }}
+                            value={item.title}
+                          ></input>
+                          설명 :{' '}
+                          <textarea
+                            className="text-black"
+                            onChange={(e) => {
+                              changeItem(item.id, 'desc', e.target.value);
+                            }}
+                            value={item.desc}
+                          ></textarea>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full flex">
+                        <img
+                          className="w-24 h-24"
+                          src={
+                            item.img === 'no-image' ? defaultImg.src : item.img
+                          }
+                        ></img>
+                        <div className="w-full flex flex-col justify-between m-4">
+                          <div>이름 : {item.title}</div>
+                          <div>미정 : {item.desc}</div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="w-full flex justify-between">
+                      {items[i].editMode ? (
+                        <button
+                          onClick={() => {
+                            cancelEditMode(item.id);
+                          }}
+                        >
+                          취소
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            deleteItem(item.id);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          changeEditMode(item.id);
                         }}
-                        value={item.title}
-                      ></input>
-                      설명 :{' '}
-                      <textarea
-                        className="text-black"
-                        onChange={(e) => {
-                          changeItem(item.id, 'desc', e.target.value);
-                        }}
-                        value={item.desc}
-                      ></textarea>
+                      >
+                        수정
+                      </button>
                     </div>
                   </div>
-                ) : (
-                  <div className="w-full flex">
-                    <img
-                      className="w-24 h-24"
-                      src={item.img === 'no-image' ? defaultImg.src : item.img}
-                    ></img>
-                    <div className="w-full flex flex-col justify-between m-4">
-                      <div>이름 : {item.title}</div>
-                      <div>미정 : {item.desc}</div>
-                    </div>
-                  </div>
-                )}
-                <div className="w-full flex justify-between">
-                  {items[i].editMode ? (
-                    <button
-                      onClick={() => {
-                        cancelEditMode(item.id);
-                      }}
-                    >
-                      취소
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        deleteItem(item.id);
-                      }}
-                    >
-                      삭제
-                    </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      changeEditMode(item.id);
-                    }}
-                  >
-                    수정
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                </Reorder.Item>
+              );
+            })}{' '}
+          </Reorder.Group>
           <button onClick={addItem}>추가</button>
           <button onClick={createPoll}>투표생성</button>
         </div>
