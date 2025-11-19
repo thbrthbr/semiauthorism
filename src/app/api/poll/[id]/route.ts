@@ -1,4 +1,4 @@
-import { editPoll, getPoll } from '@/firebase/firebaseConfig';
+import { editPoll, getPoll, deletePoll } from '@/firebase/firebaseConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface RouteContext {
@@ -32,31 +32,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
-// export async function POST(request: NextRequest, context: RouteContext) {
-//   const { id } = context.params;
-//   console.log('여기서빠그라지는거야');
-//   console.log(id);
-
-//   try {
-//     const body = await request.json();
-
-//     const { title, desc, categories } = body;
-
-//     const result = await editPoll({ id, title, desc, categories });
-
-//     return NextResponse.json(
-//       { message: '제목 수정 성공', data: result },
-//       { status: 200 }, // 200 OK
-//     );
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json(
-//       { message: '서버 에러가 발생했습니다.', error },
-//       { status: 500 }, // 500 Internal Server Error
-//     );
-//   }
-// }
-
 export async function POST(request: NextRequest, context: RouteContext) {
   const data = await request.json();
   const { id } = await context.params;
@@ -70,4 +45,33 @@ export async function POST(request: NextRequest, context: RouteContext) {
     data: result,
   };
   return NextResponse.json(response, { status: 201 });
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  // const { id } = context.params;
+
+  try {
+    const body = await request.json();
+    const { id: textId } = body;
+
+    const deleteResult = await deletePoll(textId);
+
+    if (!deleteResult) {
+      return NextResponse.json(
+        { message: '삭제할 데이터를 찾을 수 없습니다.' },
+        { status: 404 }, // 404 Not Found
+      );
+    }
+
+    return NextResponse.json(
+      { message: '투표삭제됨', data: deleteResult },
+      { status: 200 }, // 200 OK
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: '서버 에러가 발생했습니다.', error },
+      { status: 500 }, // 500 Internal Server Error
+    );
+  }
 }

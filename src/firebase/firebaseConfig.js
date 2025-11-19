@@ -221,6 +221,12 @@ export async function editPod({ id, pod }) {
   return fetched;
 }
 
+export async function deletePoll(id) {
+  console.log(id);
+  await deleteDoc(doc(db, 'poll', id));
+  return { status: '성공' };
+}
+
 export async function addVote({ id, vote }) {
   const pollRef = doc(db, 'poll', id);
   const snapshot = await getDoc(pollRef);

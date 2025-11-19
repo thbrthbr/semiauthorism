@@ -11,6 +11,8 @@ import defaultImg from '../../../asset/no-image.png';
 
 export default function PollEdit() {
   const param = useParams();
+  const [id, setId] = useState<any>(null);
+  const [publicId, setPublicId] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<any>([]);
   const [protoItems, setProtoItems] = useState<any>([]);
@@ -33,6 +35,8 @@ export default function PollEdit() {
     pollDescRef.current.value = final.data[0].desc;
     pollDupRef.current.value = Number(final.data[0].dup);
     const itemArr = JSON.parse(final.data[0].categories);
+    setId(final.data[0].id);
+    setPublicId(final.data[0].publicId);
     setItems(itemArr);
     setProtoItems(itemArr.map((item: any) => ({ ...item, editMode: false })));
   };
@@ -62,7 +66,22 @@ export default function PollEdit() {
     const final = await res.json();
     if (final.message == '투표수정됨') {
       alert('투표가 수정되었습니다');
-      router.push('/');
+      router.push(`/poll/${publicId}`);
+    }
+  };
+
+  const deletePoll = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE}/api/poll/${id}`, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        id: id,
+      }),
+      cache: 'no-store',
+    });
+    const final = await res.json();
+    if (final.message == '투표삭제됨') {
+      alert('투표가 삭제되었습니다');
+      router.push(`/`);
     }
   };
 
@@ -159,116 +178,125 @@ export default function PollEdit() {
   }, [items]);
 
   return (
-    <div className="w-full relative bg-black text-white flex flex-col items-center justify-start h-screen">
-      <button
-        onClick={() => {
-          router.push('/');
-        }}
-      >
-        투표로 돌아가기
-      </button>
-      <div className="w-full flex flex-col justify-center items-center">
-        <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
-          <input
-            className="text-black w-full"
-            ref={pollNameRef}
-            placeholder="투표이름"
-          ></input>
-          <textarea
-            className="text-black w-full"
-            ref={pollDescRef}
-            placeholder="어떤 투표인지 설명"
-          ></textarea>
-          <div>중복 허용 최대 개수</div>
-          <input
-            ref={pollDupRef}
-            className="text-black"
-            type="number"
-            min="1"
-          ></input>
+    <div className="w-full flex justify-center">
+      <div className="w-72 relative bg-black text-white flex flex-col items-center justify-start h-screen">
+        <div className="w-full flex flex-row items-between justify-between">
+          <button
+            onClick={() => {
+              router.push('/');
+            }}
+          >
+            투표로 돌아가기
+          </button>
+          <button onClick={deletePoll}>투표 삭제하기</button>
         </div>
-        {isLoaded ? (
-          items.map((item: any, i: number) => {
-            return (
-              <div className="w-72 flex flex-col m-5" key={i}>
-                {item.editMode ? (
-                  <div className="w-full flex flex-col">
-                    <img
-                      className="w-full"
-                      src={item.img === 'no-image' ? defaultImg.src : item.img}
-                    ></img>
-                    <button
-                      onClick={() => {
-                        changeImage(item.id);
-                      }}
-                    >
-                      이미지수정
-                    </button>
-                    <div className="w-full flex flex-col">
-                      이름 :{' '}
-                      <input
-                        className="text-black"
-                        onChange={(e) => {
-                          changeItem(item.id, 'title', e.target.value);
-                        }}
-                        value={item.title}
-                      ></input>
-                      설명 :{' '}
-                      <textarea
-                        className="text-black"
-                        onChange={(e) => {
-                          changeItem(item.id, 'desc', e.target.value);
-                        }}
-                        value={item.desc}
-                      ></textarea>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-full flex">
-                    <img
-                      className="w-24 h-24"
-                      src={item.img === 'no-image' ? defaultImg.src : item.img}
-                    ></img>
-                    <div className="w-full flex flex-col justify-between m-4">
-                      <div>이름 : {item.title}</div>
-                      <div>미정 : {item.desc}</div>
-                    </div>
-                  </div>
-                )}
-                <div className="w-full flex justify-between">
+        <div className="w-full flex flex-col justify-center items-center">
+          <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
+            <input
+              className="text-black w-full"
+              ref={pollNameRef}
+              placeholder="투표이름"
+            ></input>
+            <textarea
+              className="text-black w-full"
+              ref={pollDescRef}
+              placeholder="어떤 투표인지 설명"
+            ></textarea>
+            <div>중복 허용 최대 개수</div>
+            <input
+              ref={pollDupRef}
+              className="text-black"
+              type="number"
+              min="1"
+            ></input>
+          </div>
+          {isLoaded ? (
+            items.map((item: any, i: number) => {
+              return (
+                <div className="w-72 flex flex-col m-5" key={i}>
                   {item.editMode ? (
-                    <button
-                      onClick={() => {
-                        cancelEditMode(item.id);
-                      }}
-                    >
-                      취소
-                    </button>
+                    <div className="w-full flex flex-col">
+                      <img
+                        className="w-full"
+                        src={
+                          item.img === 'no-image' ? defaultImg.src : item.img
+                        }
+                      ></img>
+                      <button
+                        onClick={() => {
+                          changeImage(item.id);
+                        }}
+                      >
+                        이미지수정
+                      </button>
+                      <div className="w-full flex flex-col">
+                        이름 :{' '}
+                        <input
+                          className="text-black"
+                          onChange={(e) => {
+                            changeItem(item.id, 'title', e.target.value);
+                          }}
+                          value={item.title}
+                        ></input>
+                        설명 :{' '}
+                        <textarea
+                          className="text-black"
+                          onChange={(e) => {
+                            changeItem(item.id, 'desc', e.target.value);
+                          }}
+                          value={item.desc}
+                        ></textarea>
+                      </div>
+                    </div>
                   ) : (
+                    <div className="w-full flex">
+                      <img
+                        className="w-24 h-24"
+                        src={
+                          item.img === 'no-image' ? defaultImg.src : item.img
+                        }
+                      ></img>
+                      <div className="w-full flex flex-col justify-between m-4">
+                        <div>이름 : {item.title}</div>
+                        <div>미정 : {item.desc}</div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="w-full flex justify-between">
+                    {item.editMode ? (
+                      <button
+                        onClick={() => {
+                          cancelEditMode(item.id);
+                        }}
+                      >
+                        취소
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          deleteItem(item.id);
+                        }}
+                      >
+                        삭제
+                      </button>
+                    )}
                     <button
                       onClick={() => {
-                        deleteItem(item.id);
+                        changeEditMode(item.id);
                       }}
                     >
-                      삭제
+                      수정
                     </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      changeEditMode(item.id);
-                    }}
-                  >
-                    수정
-                  </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        ) : (
-          <Spinner />
-        )}
-        <button onClick={addItem}>추가</button>
-        <button onClick={editPoll}>투표수정</button>
+              );
+            })
+          ) : (
+            <Spinner />
+          )}
+          <button onClick={addItem}>추가</button>
+          <button onClick={editPoll}>투표수정</button>
+        </div>
       </div>
     </div>
   );
