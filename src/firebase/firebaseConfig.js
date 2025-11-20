@@ -189,3 +189,28 @@ export async function addVote({ id, vote, voter }) {
     return null;
   }
 }
+
+export async function searchPolls(searchOption, type) {
+  const querySnapshot = await getDocs(
+    query(collection(db, 'poll')),
+    where('title', '==', searchOption),
+  );
+
+  if (querySnapshot.empty) {
+    return [];
+  }
+  const fetchedPolls = [];
+  querySnapshot.forEach((doc) => {
+    const poll = {
+      categories: doc.data()['categories'],
+      desc: doc.data()['desc'],
+      id: doc.data()['id'],
+      title: doc.data()['title'],
+      dup: Number(doc.data()['dup']),
+      voters: doc.data()['voters'],
+      publicId: doc.data()['publicId'],
+    };
+    fetchedPolls.push(poll);
+  });
+  return fetchedPolls;
+}

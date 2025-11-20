@@ -5,6 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
 import Spinner from '@/component/spinner';
 import Poll from '../component/poll';
+import Polls from '@/component/polls';
 
 export default function Home() {
   const [polls, setPolls] = useState<any>([]);
@@ -18,7 +19,7 @@ export default function Home() {
     });
     const final = await result.json();
     setPolls(
-      final.data.polls.map((item: any) => {
+      final.data.polls.map((item: any, i: number) => {
         return { ...item, categories: JSON.parse(item.categories) };
       }),
     );
@@ -44,13 +45,7 @@ export default function Home() {
       >
         {showPolls ? '접기' : '다른 투표들 보기'}
       </button>
-      {showPolls && (
-        <div className="py-4">
-          {polls?.map((poll: any) => {
-            return <div key={poll.id}>뭔데</div>;
-          })}
-        </div>
-      )}
+      {showPolls && <Polls datas={polls} pod={pod} />}
     </div>
   );
 }

@@ -15,6 +15,7 @@ export default function Result() {
   const param = useParams();
   const router = useRouter();
   const [title, setTitle] = useState<any>('');
+  const [desc, setDesc] = useState<any>('');
   const [items, setItems] = useState<any>(null);
 
   const getPoll = async () => {
@@ -28,6 +29,7 @@ export default function Result() {
       const votes = cur.percentage;
       return acc + votes;
     }, 0);
+    setDesc(final?.data[0]?.desc);
     setTitle(final?.data[0]?.title);
     setItems({ poll: itemArr, total: real });
   };
@@ -46,6 +48,10 @@ export default function Result() {
       >
         {title}
       </div>
+      <details className="pt-4 w-72 ism flex justify-center flex-col items-center">
+        <summary className="text-xs cursor-pointer">투표설명보기</summary>
+        <div className="pt-4 whitespace-pre-wrap">{desc}</div>
+      </details>
       {items &&
         items.poll.map((item: any) => {
           const eachPer =
@@ -58,7 +64,7 @@ export default function Result() {
                 key={item.id}
                 className={`overflow-hidden rounded-lg mt-4 w-72 flex flex-col items-center border-4 border-black`}
               >
-                <Imag source={item.img} />
+                <Imag source={item.img} type="full" />
                 <div className="bg-black w-full py-4 space-y-2 flex justify-center flex-col items-center">
                   <div className="text-4xl pdh">{item.title}</div>
                   <div className="text-[13px] ism">{item.desc}</div>

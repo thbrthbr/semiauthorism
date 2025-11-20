@@ -228,7 +228,7 @@ export default function PollEdit() {
               <div>중복 허용 최대 개수</div>
               <input
                 ref={pollDupRef}
-                className="text-black"
+                className="text-black w-36"
                 type="number"
                 min="1"
               ></input>

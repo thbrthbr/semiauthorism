@@ -88,7 +88,7 @@ export default function Poll({ data }: any) {
   return (
     data && (
       <div className="relative w-full m-8 justify-center items-center flex flex-col">
-        <div className="flex">
+        <div className="flex pb-4">
           <div
             onContextMenu={(e) => {
               e.stopPropagation();
@@ -105,6 +105,10 @@ export default function Poll({ data }: any) {
             </button>
           )}
         </div>
+        <details className="w-72 ism flex justify-center flex-col items-center">
+          <summary className="text-xs cursor-pointer">투표설명보기</summary>
+          <div className="pt-4 whitespace-pre-wrap">{data.desc}</div>
+        </details>
         {data?.categories.map((item: any) => {
           return (
             <ConfettiHeartArea heartCount={10} key={item.id}>
