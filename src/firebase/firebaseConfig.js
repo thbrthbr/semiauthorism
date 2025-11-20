@@ -119,7 +119,7 @@ export async function getPoll({ id }) {
 export async function addPoll({ categories, desc, title, dup, pw }) {
   const newPoll = doc(collection(db, 'poll'));
   const voters = '[]';
-  const createdPoll = await setDoc(newPoll, {
+  const data = {
     id: newPoll.id,
     pw,
     categories,
@@ -128,8 +128,9 @@ export async function addPoll({ categories, desc, title, dup, pw }) {
     desc,
     dup,
     publicId: Date.now(),
-  });
-  return createdPoll;
+  };
+  await setDoc(newPoll, data);
+  return data;
 }
 
 export async function editPoll({ id, title, desc, dup, categories }) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { RiChatPollLine } from 'react-icons/ri';
 
 export default function Header() {
   const router = useRouter();
@@ -10,9 +11,9 @@ export default function Header() {
         onClick={() => {
           router.push('/');
         }}
-        className="noselect text-[#D34E4E] lobster text-3xl"
+        className="noselect text-[#D34E4E] text-4xl"
       >
-        POLL
+        <RiChatPollLine />
       </button>
     </div>
   );

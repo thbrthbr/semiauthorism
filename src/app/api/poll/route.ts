@@ -27,17 +27,6 @@ export async function POST(request: NextRequest) {
       data: addedPoll,
     };
   }
-  // else {
-  //   const editedPoll = await addPoll({
-  //     categories,
-  //     desc,
-  //     title,
-  //     pw,
-  //   });
-  //   const response = {
-  //     message: '투표수정됨',
-  //     data: editedPoll,
-  //   };
-  // }
+
   return Response.json(response, { status: 200 });
 }

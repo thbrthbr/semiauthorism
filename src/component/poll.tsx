@@ -117,7 +117,7 @@ export default function Poll({ data }: any) {
                 }}
                 className={`overflow-hidden rounded-lg mt-4 w-72 flex flex-col items-center border-4 ${selected.includes(item.id) ? 'border-white' : 'border-black'} active:scale-95 transition-transform duration-200 ease-out`}
               >
-                <Imag source={item.img} />
+                <Imag source={item.img} type="full" />
                 <div className="bg-black w-full py-4 space-y-2 ">
                   <div className="text-4xl pdh">{item.title}</div>
                   <div className="text-[13px] ism">{item.desc}</div>

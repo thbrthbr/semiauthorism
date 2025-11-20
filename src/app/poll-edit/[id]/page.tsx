@@ -9,6 +9,10 @@ import Menu from '@/component/menu';
 import Spinner from '@/component/spinner';
 import defaultImg from '../../../asset/no-image.png';
 import { Reorder } from 'framer-motion';
+import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md';
+import { FaRegTrashAlt } from 'react-icons/fa';
+import { LuPencil } from 'react-icons/lu';
+import Imag from '@/component/image';
 
 export default function PollEdit() {
   const param = useParams();
@@ -70,17 +74,20 @@ export default function PollEdit() {
   };
 
   const deletePoll = async () => {
-    const res = await fetch(`/api/poll/${id}`, {
-      method: 'DELETE',
-      body: JSON.stringify({
-        id: id,
-      }),
-      cache: 'no-store',
-    });
-    const final = await res.json();
-    if (final.message == '투표삭제됨') {
-      alert('투표가 삭제되었습니다');
-      router.push(`/`);
+    const confirm = window.confirm('정말 투표를 삭제하시겠습니까?');
+    if (confirm) {
+      const res = await fetch(`/api/poll/${id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({
+          id: id,
+        }),
+        cache: 'no-store',
+      });
+      const final = await res.json();
+      if (final.message == '투표삭제됨') {
+        alert('투표가 삭제되었습니다');
+        router.push(`/`);
+      }
     }
   };
 
@@ -191,17 +198,19 @@ export default function PollEdit() {
   }, [items]);
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center ism">
       <div className="w-72 relative text-white flex flex-col items-center justify-start">
-        <div className="w-full flex flex-row items-between justify-between">
+        <div className="w-full flex flex-row items-between justify-between pt-2">
           <button
             onClick={() => {
               router.push(`/poll/${publicId}`);
             }}
           >
-            투표로 돌아가기
+            <MdOutlineKeyboardBackspace className="text-3xl" />
           </button>
-          <button onClick={deletePoll}>투표 삭제하기</button>
+          <button onClick={deletePoll}>
+            <FaRegTrashAlt className="text-2xl" />
+          </button>
         </div>
         <div className="w-full flex flex-col justify-center items-center">
           <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
@@ -211,17 +220,19 @@ export default function PollEdit() {
               placeholder="투표이름"
             ></input>
             <textarea
-              className="text-black w-full"
+              className="text-black w-full resize-none"
               ref={pollDescRef}
               placeholder="어떤 투표인지 설명"
             ></textarea>
-            <div>중복 허용 최대 개수</div>
-            <input
-              ref={pollDupRef}
-              className="text-black"
-              type="number"
-              min="1"
-            ></input>
+            <div className="w-full flex items-between justify-between">
+              <div>중복 허용 최대 개수</div>
+              <input
+                ref={pollDupRef}
+                className="text-black"
+                type="number"
+                min="1"
+              ></input>
+            </div>
           </div>
           {isLoaded ? (
             <Reorder.Group axis="y" values={items} onReorder={setItems}>
@@ -242,14 +253,11 @@ export default function PollEdit() {
                 >
                   {item.editMode ? (
                     <div className="w-full flex flex-col">
-                      <img
+                      <button
                         className="w-full"
-                        src={
-                          item.img === 'no-image' ? defaultImg.src : item.img
-                        }
-                      />
-                      <button onClick={() => changeImage(item.id)}>
-                        이미지수정
+                        onClick={() => changeImage(item.id)}
+                      >
+                        <Imag source={item.img} type="full" />
                       </button>
                       <div className="w-full flex flex-col">
                         이름 :
@@ -262,7 +270,7 @@ export default function PollEdit() {
                         />
                         설명 :
                         <textarea
-                          className="text-black"
+                          className="text-black resize-none"
                           onChange={(e) =>
                             changeItem(item.id, 'desc', e.target.value)
                           }
@@ -272,15 +280,10 @@ export default function PollEdit() {
                     </div>
                   ) : (
                     <div className="w-full flex">
-                      <img
-                        className="w-24 h-24"
-                        src={
-                          item.img === 'no-image' ? defaultImg.src : item.img
-                        }
-                      />
+                      <Imag source={item.img} />
                       <div className="w-full flex flex-col justify-between m-4">
                         <div>이름 : {item.title}</div>
-                        <div>미정 : {item.desc}</div>
+                        <div>설명 : {item.desc}</div>
                       </div>
                     </div>
                   )}
@@ -288,13 +291,15 @@ export default function PollEdit() {
                   <div className="w-full flex justify-between mt-2">
                     {item.editMode ? (
                       <button onClick={() => cancelEditMode(item.id)}>
-                        취소
+                        <MdOutlineCancel />
                       </button>
                     ) : (
-                      <button onClick={() => deleteItem(item.id)}>삭제</button>
+                      <button onClick={() => deleteItem(item.id)}>
+                        <FaRegTrashAlt />
+                      </button>
                     )}
                     <button onClick={() => changeEditMode(item.id)}>
-                      수정
+                      <LuPencil />
                     </button>
                   </div>
                 </Reorder.Item>
