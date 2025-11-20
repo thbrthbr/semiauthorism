@@ -1,48 +1,50 @@
-'use client';
+'use client'
 
-import { useEffect, useRef, useState } from 'react';
-import { storage } from '../../../firebase/firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useParams, useRouter } from 'next/navigation';
-import { IoIosClose } from 'react-icons/io';
-import Menu from '@/component/menu';
-import Spinner from '@/component/spinner';
-import defaultImg from '../../asset/no-image.png';
-import Imag from '@/component/image';
-import { PercentBar } from '@/component/bar';
+import { useEffect, useRef, useState } from 'react'
+import { storage } from '../../../firebase/firebaseConfig'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { useParams, useRouter } from 'next/navigation'
+import { IoIosClose } from 'react-icons/io'
+import Menu from '@/component/menu'
+import Spinner from '@/component/spinner'
+import defaultImg from '../../asset/no-image.png'
+import Imag from '@/component/image'
+import { PercentBar } from '@/component/bar'
 
 export default function Result() {
-  const param = useParams();
-  const router = useRouter();
-  const [title, setTitle] = useState<any>('');
-  const [desc, setDesc] = useState<any>('');
-  const [items, setItems] = useState<any>(null);
+  const param = useParams()
+  const router = useRouter()
+  const [title, setTitle] = useState<any>('')
+  const [desc, setDesc] = useState<any>('')
+  const [items, setItems] = useState<any>(null)
+  const [publicId, setPublicId] = useState<any>('')
 
   const getPoll = async () => {
     const result = await fetch(`/api/poll/${param.id}`, {
       method: 'GET',
       cache: 'no-store',
-    });
-    const final = await result.json();
-    let itemArr = JSON.parse(final?.data[0]?.categories);
+    })
+    const final = await result.json()
+    let itemArr = JSON.parse(final?.data[0]?.categories)
     const real = itemArr.reduce((acc: any, cur: any) => {
-      const votes = cur.percentage;
-      return acc + votes;
-    }, 0);
-    setDesc(final?.data[0]?.desc);
-    setTitle(final?.data[0]?.title);
-    setItems({ poll: itemArr, total: real });
-  };
+      const votes = cur.percentage
+      return acc + votes
+    }, 0)
+    setPublicId(final?.data[0]?.publicId)
+    setDesc(final?.data[0]?.desc)
+    setTitle(final?.data[0]?.title)
+    setItems({ poll: itemArr, total: real })
+  }
 
   useEffect(() => {
-    getPoll();
-  }, []);
+    getPoll()
+  }, [])
   return (
     <div className="p-8 w-full flex jutify-center items-center flex-col text-white">
       <div
         onContextMenu={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
+          e.stopPropagation()
+          e.preventDefault()
         }}
         className="text-5xl w-full justify-center flex ism italic"
       >
@@ -57,7 +59,7 @@ export default function Result() {
           const eachPer =
             items.total === 0
               ? 0
-              : Math.round((item.percentage / items.total) * 100);
+              : Math.round((item.percentage / items.total) * 100)
           return (
             <div key={item.id}>
               <div
@@ -73,19 +75,19 @@ export default function Result() {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       <br></br>
       <button
         className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
         onClick={() => {
-          router.back();
+          router.push(`/poll/${publicId}`)
         }}
       >
         투표로 돌아가기
       </button>
       <br></br>
     </div>
-  );
+  )
 }
