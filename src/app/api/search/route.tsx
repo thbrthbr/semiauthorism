@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     type,
   });
   response = {
-    message: '투표생성됨',
+    message: '검색완료',
     data: addedPoll,
   };
 

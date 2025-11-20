@@ -1,12 +1,7 @@
-import { useEffect, useState } from 'react';
-import Imag from './image';
 import { useRouter } from 'next/navigation';
-import { MdOutlineEdit } from 'react-icons/md';
-import ClickHeartArea from './heart';
-import ConfettiHeartArea from './heart';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 export default function Polls({ datas, pod }: any) {
+  const router = useRouter();
   return (
     <div className="relative w-72 m-8 justify-center items-center flex flex-col">
       {datas.map((data: any) => {
@@ -17,6 +12,9 @@ export default function Polls({ datas, pod }: any) {
           <button
             className="w-full flex p-1 border border-2 border-white/20 my-1 rounded-md"
             key={data.id}
+            onClick={() => {
+              router.push(`/poll/${data.publicId}`);
+            }}
           >
             {data.title}
           </button>

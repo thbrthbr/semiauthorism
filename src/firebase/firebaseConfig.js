@@ -51,6 +51,9 @@ export async function getTodaySetting() {
       voters: doc.data()['voters'],
       dup: Number(doc.data()['dup']),
       publicId: doc.data()['publicId'],
+      nick: doc.data()['nick'],
+      pw: doc.data()['pw'],
+      ngrams: doc.data()['ngrams'],
     };
     fetchedPolls.push(poll);
     if (pod == doc.data()['id']) {
@@ -81,6 +84,9 @@ export async function getPolls() {
       dup: Number(doc.data()['dup']),
       voters: doc.data()['voters'],
       publicId: doc.data()['publicId'],
+      nick: doc.data()['nick'],
+      pw: doc.data()['pw'],
+      ngrams: doc.data()['ngrams'],
     };
     fetchedPolls.push(poll);
   });
@@ -111,12 +117,23 @@ export async function getPoll({ id }) {
       title: doc.data()['title'],
       voters: doc.data()['voters'],
       publicId: doc.data()['publicId'],
+      nick: doc.data()['nick'],
+      pw: doc.data()['pw'],
+      ngrams: doc.data()['ngrams'],
     });
   });
   return fetchedPoll;
 }
 
-export async function addPoll({ categories, desc, title, dup, pw }) {
+export async function addPoll({
+  categories,
+  desc,
+  title,
+  dup,
+  pw,
+  nick,
+  ngrams,
+}) {
   const newPoll = doc(collection(db, 'poll'));
   const voters = '[]';
   const data = {
@@ -127,19 +144,31 @@ export async function addPoll({ categories, desc, title, dup, pw }) {
     voters,
     desc,
     dup,
+    nick,
+    ngrams,
     publicId: Date.now(),
   };
   await setDoc(newPoll, data);
   return data;
 }
 
-export async function editPoll({ id, title, desc, dup, categories }) {
+export async function editPoll({
+  id,
+  title,
+  desc,
+  dup,
+  categories,
+  nick,
+  ngrams,
+}) {
   const pollRef = doc(db, 'poll', id);
   const fetched = await updateDoc(pollRef, {
     title,
     desc,
     dup,
     categories,
+    nick,
+    ngrams,
   });
   return fetched;
 }
@@ -190,11 +219,29 @@ export async function addVote({ id, vote, voter }) {
   }
 }
 
-export async function searchPolls(searchOption, type) {
-  const querySnapshot = await getDocs(
-    query(collection(db, 'poll')),
-    where('title', '==', searchOption),
-  );
+export async function searchPolls({ searchOption, type }) {
+  let q;
+
+  if (type === 'title') {
+    q = query(
+      collection(db, 'poll'),
+      where('ngrams', 'array-contains', `title:${searchOption}`),
+    );
+  } else if (type === 'nick') {
+    q = query(
+      collection(db, 'poll'),
+      where('ngrams', 'array-contains', `nick:${searchOption}`),
+    );
+  } else if (type === 'all') {
+    q = query(
+      collection(db, 'poll'),
+      where('ngrams', 'array-contains', searchOption),
+    );
+  } else {
+    return []; // 잘못된 type이면 빈 배열 반환
+  }
+
+  const querySnapshot = await getDocs(q);
 
   if (querySnapshot.empty) {
     return [];
@@ -209,6 +256,9 @@ export async function searchPolls(searchOption, type) {
       dup: Number(doc.data()['dup']),
       voters: doc.data()['voters'],
       publicId: doc.data()['publicId'],
+      nick: doc.data()['nick'],
+      pw: doc.data()['pw'],
+      ngrams: doc.data()['ngrams'],
     };
     fetchedPolls.push(poll);
   });

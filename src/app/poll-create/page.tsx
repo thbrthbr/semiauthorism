@@ -12,11 +12,14 @@ import { Reorder } from 'framer-motion';
 import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md';
 import { LuPencil } from 'react-icons/lu';
 import { FaRegTrashAlt } from 'react-icons/fa';
+import { createTaggedNgrams } from '@/func/createNgrams';
 
 export default function PollCreate() {
   const [items, setItems] = useState<any>([]);
   const [protoItems, setProtoItems] = useState<any>([]);
   const [locked, setLocked] = useState<boolean>(true);
+  const pollNickRef = useRef<any>(null);
+  const pollPwRef = useRef<any>(null);
   const pollNameRef = useRef<any>(null);
   const pollDescRef = useRef<any>(null);
   const pollDupRef = useRef<any>(null);
@@ -65,6 +68,10 @@ export default function PollCreate() {
   // @@@@@@@@@@@@@@@@@@@@@@@@
 
   const createPoll = async () => {
+    if (!pollNickRef.current.value || !pollPwRef.current.value) {
+      alert('작성자의 닉네임과 비밀번호를 입력해주세요');
+      return;
+    }
     if (!pollNameRef.current.value || !pollDescRef.current.value) {
       alert('투표의 제목과 설명을 적어주세요');
       return;
@@ -78,12 +85,18 @@ export default function PollCreate() {
     const res = await fetch(`/api/poll`, {
       method: 'POST',
       body: JSON.stringify({
-        pw: 'temp',
+        pw: pollPwRef.current.value,
         type: 'create',
         title: pollNameRef.current.value,
         desc: pollDescRef.current.value,
         dup: pollDupRef.current.value,
         categories: send,
+        nick: pollNickRef.current.value,
+        ngrams: createTaggedNgrams({
+          nick: pollNickRef.current.value,
+          title: pollNameRef.current.value,
+          // desc: pollDescRef.current.value,
+        }),
       }),
       cache: 'no-store',
     });
@@ -190,14 +203,27 @@ export default function PollCreate() {
         {locked === false && (
           <div className="w-full flex flex-col justify-center items-center">
             <div className="w-full flex flex-col justify-center items-center">
-              <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
+              <div className="w-full flex flex-col w-72 pt-4 space-y-2 items-center">
+                <div className="flex w-full justify-between text-black">
+                  <input
+                    ref={pollNickRef}
+                    placeholder="닉네임"
+                    className="w-[45%] outline-none"
+                  ></input>
+                  <input
+                    type="password"
+                    ref={pollPwRef}
+                    placeholder="비밀번호"
+                    className="w-[45%] outline-none"
+                  ></input>
+                </div>
                 <input
-                  className="text-black w-full"
+                  className="text-black w-full outline-none"
                   ref={pollNameRef}
                   placeholder="투표이름"
                 ></input>
                 <textarea
-                  className="text-black w-full resize-none"
+                  className="text-black w-full resize-none outline-nones"
                   ref={pollDescRef}
                   placeholder="어떤 투표인지 설명"
                 ></textarea>
@@ -205,7 +231,7 @@ export default function PollCreate() {
                   <div>중복 허용 최대 개수</div>
                   <input
                     ref={pollDupRef}
-                    className="text-black w-36"
+                    className="text-black w-36 outline-none"
                     type="number"
                     min="1"
                   ></input>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Search() {
   const searchRef = useRef<any>(null);
@@ -6,27 +6,25 @@ export default function Search() {
   const [polls, setPolls] = useState<any>([]);
 
   const search = async (text: string) => {
-    if (!text) return [];
-    const chars = [...text];
-    const ngrams = new Set<string>();
-    chars.forEach((c) => ngrams.add(c));
-    for (let i = 0; i < chars.length - 1; i++) {
-      ngrams.add(chars[i] + chars[i + 1]);
-    }
-    ngrams.add(text);
-    const arr = Array.from(ngrams);
-    console.log(arr);
     const res = await fetch(`/api/search`, {
       method: 'POST',
       body: JSON.stringify({
-        searchOption: arr,
+        searchOption: text,
         type: 'title',
       }),
       cache: 'no-store',
     });
 
     const final = await res.json();
+    if (final.message === '검색완료') {
+      setSearched(true);
+      setPolls(final.data);
+    }
   };
+
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
 
   return (
     <div className="w-full p-6 text-black">
@@ -50,9 +48,29 @@ export default function Search() {
           검색
         </button>
       </div>
-      {searched && (
-        <div className="w-full bg-white max-h-96 overflow-auto"></div>
-      )}
+
+      {searched === true ? (
+        <div className="rounded-md w-[85%] border border-2 border-black bg-white max-h-96 overflow-auto">
+          {polls.length > 0 ? (
+            polls.map((poll: any) => {
+              return (
+                <button key={poll.id} className="w-full">
+                  <div className="flex w-full items-between justify-between px-1">
+                    <div className="truncate w-[70%]">{poll.title}</div>
+                    <div className="text-end truncate w-[30%]">{poll.nick}</div>
+                  </div>
+                </button>
+              );
+            })
+          ) : (
+            <div className="w-full">
+              <div className="flex w-full items-between justify-between px-1">
+                해당결과가 없습니다
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

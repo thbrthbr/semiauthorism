@@ -20,7 +20,7 @@ export default function Header() {
       )}
       <div className="absolute"></div>
       <button className="noselect text-[#D34E4E] text-3xl">
-        <RxHamburgerMenu />
+        {/* <RxHamburgerMenu /> */}
       </button>
       <button
         onClick={() => {

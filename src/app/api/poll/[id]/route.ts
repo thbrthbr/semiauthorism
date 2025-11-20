@@ -35,8 +35,16 @@ export async function GET(request: NextRequest, context: RouteContext) {
 export async function POST(request: NextRequest, context: RouteContext) {
   const data = await request.json();
   const { id } = await context.params;
-  const { title, desc, categories, dup } = data;
-  const result = await editPoll({ id, title, desc, categories, dup });
+  const { title, desc, categories, dup, nick, ngrams } = data;
+  const result = await editPoll({
+    id,
+    title,
+    desc,
+    categories,
+    dup,
+    nick,
+    ngrams,
+  });
   if (result === null) {
     return new Response(null, { status: 204 });
   }

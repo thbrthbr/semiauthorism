@@ -13,6 +13,7 @@ import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { LuPencil } from 'react-icons/lu';
 import Imag from '@/component/image';
+import { createTaggedNgrams } from '@/func/createNgrams';
 
 export default function PollEdit() {
   const param = useParams();
@@ -21,6 +22,8 @@ export default function PollEdit() {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<any>([]);
   const [protoItems, setProtoItems] = useState<any>([]);
+  const pollNickRef = useRef<any>(null);
+  const pollPwRef = useRef<any>(null);
   const pollNameRef = useRef<any>(null);
   const pollDescRef = useRef<any>(null);
   const pollDupRef = useRef<any>(null);
@@ -33,6 +36,8 @@ export default function PollEdit() {
       cache: 'no-store',
     });
     const final = await result.json();
+    pollNickRef.current.value = final.data[0].nick;
+    pollPwRef.current.value = final.data[0].pw;
     pollNameRef.current.value = final.data[0].title;
     pollDescRef.current.value = final.data[0].desc;
     pollDupRef.current.value = Number(final.data[0].dup);
@@ -44,6 +49,10 @@ export default function PollEdit() {
   };
 
   const editPoll = async () => {
+    if (!pollNickRef.current.value || !pollPwRef.current.value) {
+      alert('작성자의 닉네임과 비밀번호를 입력해주세요');
+      return;
+    }
     if (!pollNameRef.current.value || !pollDescRef.current.value) {
       alert('투표의 제목과 설명을 적어주세요');
       return;
@@ -62,6 +71,13 @@ export default function PollEdit() {
         desc: pollDescRef.current.value,
         dup: pollDupRef.current.value,
         categories: send,
+        nick: pollNickRef.current.value,
+        pw: pollPwRef.current.value,
+        ngrams: createTaggedNgrams({
+          nick: pollNickRef.current.value,
+          title: pollNameRef.current.value,
+          // desc: pollDescRef.current.value,
+        }),
       }),
       cache: 'no-store',
     });
@@ -171,20 +187,6 @@ export default function PollEdit() {
     setItems(temp);
   };
 
-  const handleReorder = (fromId: string, toId: string) => {
-    setItems((prev: any[]) => {
-      const arr = [...prev];
-      const fromIndex = arr.findIndex((it) => String(it.id) === fromId);
-      const toIndex = arr.findIndex((it) => String(it.id) === toId);
-
-      if (fromIndex === -1 || toIndex === -1) return prev;
-
-      const [moved] = arr.splice(fromIndex, 1);
-      arr.splice(toIndex, 0, moved);
-      return arr;
-    });
-  };
-
   useEffect(() => {
     getPoll();
   }, []);
@@ -214,6 +216,19 @@ export default function PollEdit() {
         </div>
         <div className="w-full flex flex-col justify-center items-center">
           <div className="flex flex-col w-72 pt-4 space-y-2 items-center">
+            <div className="flex w-full justify-between text-black">
+              <input
+                ref={pollNickRef}
+                placeholder="닉네임"
+                className="w-[45%] outline-none"
+              ></input>
+              <input
+                type="password"
+                ref={pollPwRef}
+                placeholder="비밀번호"
+                className="w-[45%] outline-none"
+              ></input>
+            </div>
             <input
               className="text-black w-full"
               ref={pollNameRef}

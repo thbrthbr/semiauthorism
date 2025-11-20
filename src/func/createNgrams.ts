@@ -4,16 +4,23 @@ export function createNgrams(text: string): string[] {
   const chars = [...text];
   const ngrams = new Set<string>();
 
-  // 1) 유니그램(한 글자씩)
-  chars.forEach((c) => ngrams.add(c));
-
-  // 2) 빅그램 (두 글자씩)
-  for (let i = 0; i < chars.length - 1; i++) {
-    ngrams.add(chars[i] + chars[i + 1]);
+  // 1글자 ~ 전체 길이까지
+  for (let start = 0; start < chars.length; start++) {
+    for (let end = start + 1; end <= chars.length; end++) {
+      const slice = chars.slice(start, end).join('');
+      ngrams.add(slice);
+    }
   }
 
-  // 3) 전체 문자열도 포함
-  ngrams.add(text);
-
   return Array.from(ngrams);
+}
+
+export function createTaggedNgrams({ nick, title }: any) {
+  const result = new Set<string>();
+
+  createNgrams(nick).forEach((n) => result.add(`nick:${n}`));
+  createNgrams(title).forEach((n) => result.add(`title:${n}`));
+  //   createNgrams(desc).forEach((n) => result.add(`desc:${n}`));
+
+  return Array.from(result);
 }
