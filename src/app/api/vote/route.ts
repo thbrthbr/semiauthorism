@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
     message: '무라사키',
     data: addedVote,
   };
-  console.log(addedVote);
   if (addedVote) {
     return Response.json(response, { status: 200 });
   } else {

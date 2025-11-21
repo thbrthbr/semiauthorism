@@ -45,6 +45,8 @@ export default function Admin() {
       method: 'POST',
       body: JSON.stringify({
         pw: prompt,
+        id: 'admin',
+        type: 'admin',
       }),
       cache: 'no-store',
     });

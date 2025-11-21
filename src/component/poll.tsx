@@ -33,6 +33,8 @@ export default function Poll({ data }: any) {
       method: 'POST',
       body: JSON.stringify({
         pw: prompt,
+        id: data.id,
+        type: "user"
       }),
       cache: 'no-store',
     });

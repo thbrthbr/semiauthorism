@@ -13,6 +13,7 @@ import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md';
 import { LuPencil } from 'react-icons/lu';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { createTaggedNgrams } from '@/func/createNgrams';
+import Imag from '@/component/image';
 
 export default function PollCreate() {
   const [items, setItems] = useState<any>([]);
@@ -286,14 +287,7 @@ export default function PollCreate() {
                           className="w-full"
                           onClick={() => changeImage2(item.id)}
                         >
-                          <img
-                            className="w-full"
-                            src={
-                              item.img === 'no-image'
-                                ? defaultImg.src
-                                : item.img
-                            }
-                          />
+                          <Imag source={item.img} type="full" />
                         </button>
                         <div className="w-full flex flex-col">
                           이름 :{' '}
@@ -316,12 +310,7 @@ export default function PollCreate() {
                       </div>
                     ) : (
                       <div className="w-full flex">
-                        <img
-                          className="w-24 h-24"
-                          src={
-                            item.img === 'no-image' ? defaultImg.src : item.img
-                          }
-                        ></img>
+                        <Imag source={item.img} />
                         <div className="w-full flex flex-col justify-between m-4">
                           <div>이름 : {item.title}</div>
                           <div>설명 : {item.desc}</div>

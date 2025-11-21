@@ -264,3 +264,19 @@ export async function searchPolls({ searchOption, type }) {
   });
   return fetchedPolls;
 }
+
+export async function checkPW({ id, pw }) {
+  const querySnapshot = await getDocs(
+    query(collection(db, 'poll'), where('id', '==', id)),
+  );
+  if (querySnapshot.empty) {
+    return 'NO';
+  }
+  let fetched = 'NO';
+  querySnapshot.forEach((doc) => {
+    if (doc.data()['pw'] === pw) {
+      fetched = 'OK';
+    }
+  });
+  return fetched;
+}
