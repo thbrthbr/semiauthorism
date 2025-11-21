@@ -139,6 +139,31 @@ export default function PollEdit() {
     file.click();
   };
 
+  const changeImage2 = async (id: number) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.jpg, .png, .gif, .webp';
+
+    input.addEventListener('change', async (event: any) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/poll-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      changeItem(id, 'img', data.url);
+      // 여기서 DB 업데이트 or items 배열 업데이트 등 하면 됨
+    });
+
+    input.click();
+  };
+
   const changeEditMode = (id: number) => {
     setItems((prev: any[]) =>
       prev.map((item) =>
@@ -270,7 +295,7 @@ export default function PollEdit() {
                     <div className="w-full flex flex-col">
                       <button
                         className="w-full"
-                        onClick={() => changeImage(item.id)}
+                        onClick={() => changeImage2(item.id)}
                       >
                         <Imag source={item.img} type="full" />
                       </button>
