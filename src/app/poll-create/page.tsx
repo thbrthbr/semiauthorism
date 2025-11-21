@@ -25,20 +25,20 @@ export default function PollCreate() {
   const pollDupRef = useRef<any>(null);
   const router = useRouter();
 
-  const auth = async () => {
-    const prompt = window.prompt('비밀번호를 입력하세요');
-    const res = await fetch(`api/pw`, {
-      method: 'POST',
-      body: JSON.stringify({
-        pw: prompt,
-      }),
-      cache: 'no-store',
-    });
-    const final = await res.json();
-    if (final.message == 'OK') {
-      setLocked(false);
-    }
-  };
+  // const auth = async () => {
+  //   const prompt = window.prompt('비밀번호를 입력하세요');
+  //   const res = await fetch(`api/pw`, {
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //       pw: prompt,
+  //     }),
+  //     cache: 'no-store',
+  //   });
+  //   const final = await res.json();
+  //   if (final.message == 'OK') {
+  //     setLocked(false);
+  //   }
+  // };
   // const insertPW = () => {
   //   if (pwRef.current) {
   //     if (pwRef.current.value == process.env.NEXT_PUBLIC_PW) {
@@ -208,9 +208,9 @@ export default function PollCreate() {
     setItems(temp);
   };
 
-  useEffect(() => {
-    auth();
-  }, []);
+  // useEffect(() => {
+  //   auth();
+  // }, []);
 
   return (
     <div className="w-full flex justify-center ism">
@@ -225,162 +225,154 @@ export default function PollCreate() {
           </button>
           <div></div>
         </div>
-        {locked === false && (
+        <div className="w-full flex flex-col justify-center items-center">
           <div className="w-full flex flex-col justify-center items-center">
-            <div className="w-full flex flex-col justify-center items-center">
-              <div className="w-full flex flex-col w-72 pt-4 space-y-2 items-center">
-                <div className="flex w-full justify-between text-black">
-                  <input
-                    ref={pollNickRef}
-                    placeholder="닉네임"
-                    className="w-[45%] outline-none"
-                  ></input>
-                  <input
-                    type="password"
-                    ref={pollPwRef}
-                    placeholder="비밀번호"
-                    className="w-[45%] outline-none"
-                  ></input>
-                </div>
+            <div className="w-full flex flex-col w-72 pt-4 space-y-2 items-center">
+              <div className="flex w-full justify-between text-black">
                 <input
-                  className="text-black w-full outline-none"
-                  ref={pollNameRef}
-                  placeholder="투표이름"
+                  ref={pollNickRef}
+                  placeholder="닉네임"
+                  className="w-[45%] outline-none"
                 ></input>
-                <textarea
-                  className="text-black w-full resize-none outline-nones"
-                  ref={pollDescRef}
-                  placeholder="어떤 투표인지 설명"
-                ></textarea>
-                <div className="w-full flex items-between justify-between">
-                  <div>중복 허용 최대 개수</div>
-                  <input
-                    ref={pollDupRef}
-                    className="text-black w-36 outline-none"
-                    type="number"
-                    min="1"
-                  ></input>
-                </div>
+                <input
+                  type="password"
+                  ref={pollPwRef}
+                  placeholder="비밀번호"
+                  className="w-[45%] outline-none"
+                ></input>
+              </div>
+              <input
+                className="text-black w-full outline-none"
+                ref={pollNameRef}
+                placeholder="투표이름"
+              ></input>
+              <textarea
+                className="text-black w-full resize-none outline-nones"
+                ref={pollDescRef}
+                placeholder="어떤 투표인지 설명"
+              ></textarea>
+              <div className="w-full flex items-between justify-between">
+                <div>중복 허용 최대 개수</div>
+                <input
+                  ref={pollDupRef}
+                  className="text-black w-36 outline-none"
+                  type="number"
+                  min="1"
+                ></input>
               </div>
             </div>
-            <Reorder.Group axis="y" values={items} onReorder={setItems}>
-              {items.map((item: any, i: number) => {
-                return (
-                  <Reorder.Item
-                    key={item.id}
-                    value={item}
-                    className="w-72 flex flex-col m-5 cursor-grab active:cursor-grabbing rounded-md p-1 border border-white/20"
-                    whileDrag={{
-                      scale: 1.03,
-                      boxShadow: '0 12px 25px rgba(0,0,0,0.35)',
-                    }}
-                    animate={{
-                      scale: 1,
-                      boxShadow: '0 0 0 rgba(0,0,0,0)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  >
-                    <div className="flex flex-col gap-3">
-                      {item.editMode ? (
-                        <div className="w-full flex flex-col">
-                          <button
-                            className="w-full"
-                            onClick={() => changeImage2(item.id)}
-                          >
-                            <img
-                              className="w-full"
-                              src={
-                                item.img === 'no-image'
-                                  ? defaultImg.src
-                                  : item.img
-                              }
-                            />
-                          </button>
-                          <div className="w-full flex flex-col">
-                            이름 :{' '}
-                            <input
-                              className="text-black"
-                              onChange={(e) => {
-                                changeItem(
-                                  items[i].id,
-                                  'title',
-                                  e.target.value,
-                                );
-                              }}
-                              value={item.title}
-                            ></input>
-                            설명 :{' '}
-                            <textarea
-                              className="text-black resize-none"
-                              onChange={(e) => {
-                                changeItem(item.id, 'desc', e.target.value);
-                              }}
-                              value={item.desc}
-                            ></textarea>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-full flex">
+          </div>
+          <Reorder.Group axis="y" values={items} onReorder={setItems}>
+            {items.map((item: any, i: number) => {
+              return (
+                <Reorder.Item
+                  key={item.id}
+                  value={item}
+                  className="w-72 flex flex-col m-5 cursor-grab active:cursor-grabbing rounded-md p-1 border border-white/20"
+                  whileDrag={{
+                    scale: 1.03,
+                    boxShadow: '0 12px 25px rgba(0,0,0,0.35)',
+                  }}
+                  animate={{
+                    scale: 1,
+                    boxShadow: '0 0 0 rgba(0,0,0,0)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                >
+                  <div className="flex flex-col gap-3">
+                    {item.editMode ? (
+                      <div className="w-full flex flex-col">
+                        <button
+                          className="w-full"
+                          onClick={() => changeImage2(item.id)}
+                        >
                           <img
-                            className="w-24 h-24"
+                            className="w-full"
                             src={
                               item.img === 'no-image'
                                 ? defaultImg.src
                                 : item.img
                             }
-                          ></img>
-                          <div className="w-full flex flex-col justify-between m-4">
-                            <div>이름 : {item.title}</div>
-                            <div>설명 : {item.desc}</div>
-                          </div>
+                          />
+                        </button>
+                        <div className="w-full flex flex-col">
+                          이름 :{' '}
+                          <input
+                            className="text-black"
+                            onChange={(e) => {
+                              changeItem(items[i].id, 'title', e.target.value);
+                            }}
+                            value={item.title}
+                          ></input>
+                          설명 :{' '}
+                          <textarea
+                            className="text-black resize-none"
+                            onChange={(e) => {
+                              changeItem(item.id, 'desc', e.target.value);
+                            }}
+                            value={item.desc}
+                          ></textarea>
                         </div>
-                      )}
-                      <div className="w-full flex justify-between">
-                        {items[i].editMode ? (
-                          <button
-                            onClick={() => {
-                              cancelEditMode(item.id);
-                            }}
-                          >
-                            <MdOutlineCancel />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              deleteItem(item.id);
-                            }}
-                          >
-                            <FaRegTrashAlt />
-                          </button>
-                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full flex">
+                        <img
+                          className="w-24 h-24"
+                          src={
+                            item.img === 'no-image' ? defaultImg.src : item.img
+                          }
+                        ></img>
+                        <div className="w-full flex flex-col justify-between m-4">
+                          <div>이름 : {item.title}</div>
+                          <div>설명 : {item.desc}</div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="w-full flex justify-between">
+                      {items[i].editMode ? (
                         <button
                           onClick={() => {
-                            changeEditMode(item.id);
+                            cancelEditMode(item.id);
                           }}
                         >
-                          <LuPencil />
+                          <MdOutlineCancel />
                         </button>
-                      </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            deleteItem(item.id);
+                          }}
+                        >
+                          <FaRegTrashAlt />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          changeEditMode(item.id);
+                        }}
+                      >
+                        <LuPencil />
+                      </button>
                     </div>
-                  </Reorder.Item>
-                );
-              })}{' '}
-            </Reorder.Group>
-            <button
-              className="w-72 px-4 py-2 m-5 text-white font-semibold rounded-lg border border-white/20"
-              onClick={addItem}
-            >
-              +
-            </button>
-            <button
-              className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
+                  </div>
+                </Reorder.Item>
+              );
+            })}{' '}
+          </Reorder.Group>
+          <button
+            className="w-72 px-4 py-2 m-5 text-white font-semibold rounded-lg border border-white/20"
+            onClick={addItem}
+          >
+            +
+          </button>
+          <button
+            className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md
             hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
-              onClick={createPoll}
-            >
-              투표생성
-            </button>
-          </div>
-        )}
+            onClick={createPoll}
+          >
+            투표생성
+          </button>
+        </div>
       </div>
     </div>
   );
