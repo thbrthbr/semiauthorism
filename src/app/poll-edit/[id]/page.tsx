@@ -295,7 +295,7 @@ export default function PollEdit() {
                     <div className="w-full flex flex-col">
                       <button
                         className="w-full"
-                        onClick={() => changeImage(item.id)}
+                        onClick={() => changeImage2(item.id)}
                       >
                         <Imag source={item.img} type="full" />
                       </button>
