@@ -165,6 +165,7 @@ export async function editPoll({
   end,
   categories,
   nick,
+  pw,
   ngrams,
 }) {
   const pollRef = doc(db, 'poll', id)
@@ -175,6 +176,8 @@ export async function editPoll({
     end,
     categories,
     nick,
+    end,
+    pw,
     ngrams,
   })
   return fetched
