@@ -1,5 +1,5 @@
-import { addVote } from '@/firebase/firebaseConfig';
-import { NextRequest, NextResponse } from 'next/server';
+import { addVote } from '@/firebase/firebaseConfig'
+import { NextRequest, NextResponse } from 'next/server'
 
 // export async function GET(request: NextRequest) {
 //   const fetchedReplays = await getTexts();
@@ -12,18 +12,19 @@ import { NextRequest, NextResponse } from 'next/server';
 // }
 
 export async function POST(request: NextRequest) {
-  const { id, vote, voter } = await request.json();
+  const { id, vote, voter } = await request.json()
   const addedVote = await addVote({
     id,
     vote,
     voter,
-  });
+  })
   const response = {
     message: '무라사키',
     data: addedVote,
-  };
+  }
+  console.log(addedVote)
   if (addedVote) {
-    return Response.json(response, { status: 200 });
+    return Response.json(response, { status: 200 })
   } else {
     return Response.json(
       {
@@ -31,6 +32,6 @@ export async function POST(request: NextRequest) {
         data: null,
       },
       { status: 200 },
-    );
+    )
   }
 }

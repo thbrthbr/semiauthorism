@@ -200,8 +200,15 @@ export async function addVote({ id, vote, voter }) {
   const pollRef = doc(db, 'poll', id)
   const snapshot = await getDoc(pollRef)
   const currentData = JSON.parse(snapshot.data().categories)
+  // const endTime =
+  //   Number(snapshot.data().publicId) + Number(snapshot.data().end) * 6000
+  // if (Date.now() >= endTime) {
+  //   console.log('여기라고??')
+  //   return null
+  // }
   let newVoters = [...JSON.parse(snapshot.data().voters)]
   const isVoted = newVoters.find((n) => n === voter)
+  console.log(isVoted)
   if (isVoted === undefined) {
     const obj = vote.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1
@@ -220,11 +227,13 @@ export async function addVote({ id, vote, voter }) {
       categories: final,
       voters: JSON.stringify(newVoters),
     })
+    console.log('여길거같은디')
     return {
       categories: final,
       voters: JSON.stringify(newVoters),
     }
   } else {
+    console.log('여기가 문제엿내,,')
     return null
   }
 }

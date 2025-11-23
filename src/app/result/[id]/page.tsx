@@ -154,7 +154,7 @@ export default function Result() {
           <br />
           <button
             className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/poll/${data.publicId}`)}
           >
             투표로 돌아가기
           </button>

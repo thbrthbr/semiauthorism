@@ -45,6 +45,11 @@ export default function Poll({ data }: any) {
   }
 
   const vote = async () => {
+    if (Date.now() >= Number(data.publicId) + Number(data.end) * 60000) {
+      alert('투표시간이 끝났습니다!')
+      router.push(`/result/${data.publicId}`)
+      return
+    }
     const temp = [...selected]
     if (temp.length < 1) {
       alert('최소 하나의 항목을 골라주세요!')
@@ -83,6 +88,7 @@ export default function Poll({ data }: any) {
     if (!data) return
     if (Date.now() >= Number(data.publicId) + Number(data.end) * 60000) {
       router.push(`/result/${data.publicId}`)
+      return
     }
     if (data) {
       if (localStorage.getItem(`voter:${data.publicId}`)) {
