@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from 'react'
+import { motion } from 'framer-motion'
 
 /**
  * PercentBar (TS 총합 버전)
@@ -17,16 +17,16 @@ import { motion } from 'framer-motion';
  * - className?: string (container)
  */
 export type PercentBarProps = {
-  value: number;
-  showLabel?: boolean;
-  height?: number;
-  rounded?: boolean;
-  animate?: boolean;
-  striped?: boolean;
-  thresholds?: { good: number; warn: number };
-  colorMode?: 'status' | 'brand';
-  className?: string;
-};
+  value: number
+  showLabel?: boolean
+  height?: number
+  rounded?: boolean
+  animate?: boolean
+  striped?: boolean
+  thresholds?: { good: number; warn: number }
+  colorMode?: 'status' | 'brand'
+  className?: string
+}
 
 export const PercentBar: React.FC<PercentBarProps> = ({
   value,
@@ -39,19 +39,19 @@ export const PercentBar: React.FC<PercentBarProps> = ({
   colorMode = 'status',
   className = '',
 }) => {
-  const v = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
+  const v = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0))
 
   const barColor = (() => {
-    if (colorMode === 'brand') return 'bg-blue-500';
-    if (v >= thresholds.good) return 'bg-emerald-500';
-    if (v >= thresholds.warn) return 'bg-amber-500';
-    return 'bg-rose-500';
-  })();
+    if (colorMode === 'brand') return 'bg-blue-500'
+    if (v >= thresholds.good) return 'bg-emerald-500'
+    if (v >= thresholds.warn) return 'bg-amber-500'
+    return 'bg-rose-500'
+  })()
 
-  const radius = rounded ? 'rounded-full' : 'rounded';
+  const radius = rounded ? 'rounded-full' : 'rounded'
   const stripeClass = striped
     ? 'bg-[length:20px_20px] bg-[linear-gradient(45deg,rgba(255,255,255,.25)_25%,transparent_25%,transparent_50%,rgba(255,255,255,.25)_50%,rgba(255,255,255,.25)_75%,transparent_75%,transparent)]'
-    : '';
+    : ''
 
   return (
     <div className={`w-[95%] ${className}`}>
@@ -79,13 +79,13 @@ export const PercentBar: React.FC<PercentBarProps> = ({
 
         {showLabel && (
           <div className="absolute inset-0 flex items-center justify-center text-[11px] font-medium text-white/95 drop-shadow">
-            {v.toFixed(0)}%
+            {v.toFixed(2)}%
           </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 // =====================
 // Preview / Demo (TSX)
@@ -94,15 +94,15 @@ export const PercentBar: React.FC<PercentBarProps> = ({
 // children 타입 누락 오류 방지를 위해 PropsWithChildren 사용
 
 type DemoRowProps = React.PropsWithChildren<{
-  title: string;
-}>;
+  title: string
+}>
 
 const DemoRow = ({ title, children }: DemoRowProps) => (
   <div className="space-y-1">
     <div className="text-xs text-gray-500 dark:text-gray-400">{title}</div>
     {children}
   </div>
-);
+)
 
 export default function Preview() {
   return (
@@ -138,5 +138,5 @@ export default function Preview() {
         </DemoRow>
       </div>
     </div>
-  );
+  )
 }

@@ -41,14 +41,18 @@ export default function Result() {
     )
 
     const withPercent = itemArr.map((item: any) => {
-      const eachPer =
-        totalVotes === 0
-          ? 0
-          : Math.round((Number(item.percentage) / totalVotes) * 100)
-      return { ...item, eachPer }
+      const raw =
+        totalVotes === 0 ? 0 : (Number(item.percentage) / totalVotes) * 100
+
+      return {
+        ...item,
+        eachPer: raw, // 숫자로 저장
+      }
     })
 
-    const sorted = withPercent.sort((a: any, b: any) => b.eachPer - a.eachPer)
+    const sorted = withPercent.sort(
+      (a: any, b: any) => b.percentage - a.percentage,
+    )
 
     let rank = 1
     let lastPer: number | null = null
