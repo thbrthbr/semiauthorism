@@ -1,68 +1,74 @@
-'use client';
+'use client'
 
-import { useEffect, useRef, useState } from 'react';
-import { storage } from '../../../firebase/firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useParams, useRouter } from 'next/navigation';
-import { IoIosClose } from 'react-icons/io';
-import Menu from '@/component/menu';
-import Spinner from '@/component/spinner';
-import defaultImg from '../../../asset/no-image.png';
-import { Reorder } from 'framer-motion';
-import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md';
-import { FaRegTrashAlt } from 'react-icons/fa';
-import { LuPencil } from 'react-icons/lu';
-import Imag from '@/component/image';
-import { createTaggedNgrams } from '@/func/createNgrams';
+import { useEffect, useRef, useState } from 'react'
+import { storage } from '../../../firebase/firebaseConfig'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { useParams, useRouter } from 'next/navigation'
+import Spinner from '@/component/spinner'
+import defaultImg from '../../../asset/no-image.png'
+import { Reorder } from 'framer-motion'
+import { MdOutlineCancel, MdOutlineKeyboardBackspace } from 'react-icons/md'
+import { FaRegTrashAlt } from 'react-icons/fa'
+import { LuPencil } from 'react-icons/lu'
+import Imag from '@/component/image'
+import { createTaggedNgrams } from '@/func/createNgrams'
+import { FaCheck } from 'react-icons/fa6'
+import DatePicker from '@/component/date-picker'
 
 export default function PollEdit() {
-  const param = useParams();
-  const [id, setId] = useState<any>(null);
-  const [publicId, setPublicId] = useState<any>(null);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [items, setItems] = useState<any>([]);
-  const [protoItems, setProtoItems] = useState<any>([]);
-  const pollNickRef = useRef<any>(null);
-  const pollPwRef = useRef<any>(null);
-  const pollNameRef = useRef<any>(null);
-  const pollDescRef = useRef<any>(null);
-  const pollDupRef = useRef<any>(null);
-  const isMounted = useRef<any>(false);
-  const router = useRouter();
+  const param = useParams()
+  const [id, setId] = useState<any>(null)
+  const [publicId, setPublicId] = useState<any>(null)
+  const [isLoaded, setIsLoaded] = useState<boolean>(false)
+  const [items, setItems] = useState<any>([])
+  const [protoItems, setProtoItems] = useState<any>([])
+  const pollNickRef = useRef<any>(null)
+  const pollPwRef = useRef<any>(null)
+  const pollNameRef = useRef<any>(null)
+  const pollDescRef = useRef<any>(null)
+  const pollDupRef = useRef<any>(null)
+  const pollEndRef = useRef<any>(null)
+  const isMounted = useRef<any>(false)
+  const router = useRouter()
 
   const getPoll = async () => {
     const result = await fetch(`/api/poll/${param.id}`, {
       method: 'GET',
       cache: 'no-store',
-    });
-    const final = await result.json();
-    pollNickRef.current.value = final.data[0].nick;
-    pollPwRef.current.value = final.data[0].pw;
-    pollNameRef.current.value = final.data[0].title;
-    pollDescRef.current.value = final.data[0].desc;
-    pollDupRef.current.value = Number(final.data[0].dup);
-    const itemArr = JSON.parse(final.data[0].categories);
-    setId(final.data[0].id);
-    setPublicId(final.data[0].publicId);
-    setItems(itemArr);
-    setProtoItems(itemArr.map((item: any) => ({ ...item, editMode: false })));
-  };
+    })
+    const final = await result.json()
+    pollNickRef.current.value = final.data[0].nick
+    pollPwRef.current.value = final.data[0].pw
+    pollNameRef.current.value = final.data[0].title
+    pollDescRef.current.value = final.data[0].desc
+    pollEndRef.current.value = Number(final.data[0].end)
+    pollDupRef.current.value = Number(final.data[0].dup)
+    const itemArr = JSON.parse(final.data[0].categories)
+    setId(final.data[0].id)
+    setPublicId(final.data[0].publicId)
+    setItems(itemArr)
+    setProtoItems(itemArr.map((item: any) => ({ ...item, editMode: false })))
+  }
 
   const editPoll = async () => {
     if (!pollNickRef.current.value || !pollPwRef.current.value) {
-      alert('작성자의 닉네임과 비밀번호를 입력해주세요');
-      return;
+      alert('작성자의 닉네임과 비밀번호를 입력해주세요')
+      return
     }
     if (!pollNameRef.current.value || !pollDescRef.current.value) {
-      alert('투표의 제목과 설명을 적어주세요');
-      return;
+      alert('투표의 제목과 설명을 적어주세요')
+      return
     }
     if (items.length < 2) {
-      alert('투표대상을 최소 2개를 생성해주세요');
-      return;
+      alert('투표대상을 최소 2개를 생성해주세요')
+      return
     }
-    const item = [...items];
-    const send = JSON.stringify(item);
+    if (!pollEndRef.current.value) {
+      alert('투표기간을 정해주세요')
+      return
+    }
+    const item = [...items]
+    const send = JSON.stringify(item)
     const res = await fetch(`/api/poll/${param.id}`, {
       method: 'POST',
       body: JSON.stringify({
@@ -70,6 +76,7 @@ export default function PollEdit() {
         title: pollNameRef.current.value,
         desc: pollDescRef.current.value,
         dup: pollDupRef.current.value,
+        end: pollEndRef.current.value,
         categories: send,
         nick: pollNickRef.current.value,
         pw: pollPwRef.current.value,
@@ -80,17 +87,17 @@ export default function PollEdit() {
         }),
       }),
       cache: 'no-store',
-    });
+    })
 
-    const final = await res.json();
+    const final = await res.json()
     if (final.message == '투표수정됨') {
-      alert('투표가 수정되었습니다');
-      router.push(`/poll/${publicId}`);
+      alert('투표가 수정되었습니다')
+      router.push(`/poll/${publicId}`)
     }
-  };
+  }
 
   const deletePoll = async () => {
-    const confirm = window.confirm('정말 투표를 삭제하시겠습니까?');
+    const confirm = window.confirm('정말 투표를 삭제하시겠습니까?')
     if (confirm) {
       const res = await fetch(`/api/poll/${id}`, {
         method: 'DELETE',
@@ -98,17 +105,17 @@ export default function PollEdit() {
           id: id,
         }),
         cache: 'no-store',
-      });
-      const final = await res.json();
+      })
+      const final = await res.json()
       if (final.message == '투표삭제됨') {
-        alert('투표가 삭제되었습니다');
-        router.push(`/`);
+        alert('투표가 삭제되었습니다')
+        router.push(`/`)
       }
     }
-  };
+  }
 
   const addItem = () => {
-    const itemId = Date.now();
+    const itemId = Date.now()
     const item = {
       id: itemId,
       title: '미정',
@@ -116,113 +123,113 @@ export default function PollEdit() {
       img: 'no-image',
       percentage: 0,
       editMode: false,
-    };
-    let temp = items.slice(0);
-    temp.push(item);
-    setItems(temp);
-  };
+    }
+    let temp = items.slice(0)
+    temp.push(item)
+    setItems(temp)
+  }
 
   const changeImage = (id: number) => {
-    let file: any = document.createElement('input');
-    file.type = 'file';
-    file.accept = '.jpg, .png, .gif, .webp';
+    let file: any = document.createElement('input')
+    file.type = 'file'
+    file.accept = '.jpg, .png, .gif, .webp'
     file.addEventListener('change', async (file: any) => {
-      let image = file.target.files[0];
-      const path = 'poll-image/' + Date.now() + ':' + image.name;
-      const storageRef = ref(storage, path);
+      let image = file.target.files[0]
+      const path = 'poll-image/' + Date.now() + ':' + image.name
+      const storageRef = ref(storage, path)
       uploadBytes(storageRef, image).then(async (snapshot) => {
         getDownloadURL(snapshot.ref).then(async (downUrl) => {
-          changeItem(id, 'img', downUrl);
-        });
-      });
-    });
-    file.click();
-  };
+          changeItem(id, 'img', downUrl)
+        })
+      })
+    })
+    file.click()
+  }
 
   const changeImage2 = async (id: number) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.jpg, .png, .gif, .webp';
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.jpg, .png, .gif, .webp'
 
     input.addEventListener('change', async (event: any) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
+      const file = event.target.files?.[0]
+      if (!file) return
 
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      formData.append('file', file)
 
       const res = await fetch('/api/poll-image', {
         method: 'POST',
         body: formData,
-      });
+      })
 
-      const data = await res.json();
-      changeItem(id, 'img', data.url);
+      const data = await res.json()
+      changeItem(id, 'img', data.url)
       // 여기서 DB 업데이트 or items 배열 업데이트 등 하면 됨
-    });
+    })
 
-    input.click();
-  };
+    input.click()
+  }
 
   const changeEditMode = (id: number) => {
     setItems((prev: any[]) =>
       prev.map((item) =>
         item.id === id ? { ...item, editMode: !item.editMode } : item,
       ),
-    );
-  };
+    )
+  }
 
   const cancelEditMode = (id: number) => {
     setItems((prev: any[]) =>
       prev.map((item) => {
-        if (item.id !== id) return item; // 다른 애들은 그대로 둔다
+        if (item.id !== id) return item // 다른 애들은 그대로 둔다
 
-        const proto = protoItems.find((p: any) => p.id === id);
+        const proto = protoItems.find((p: any) => p.id === id)
         if (!proto) {
           // 혹시 proto가 없으면 최소한 editMode만 끄자
-          return { ...item, editMode: false };
+          return { ...item, editMode: false }
         }
 
         // 원본 값으로 되돌리고 editMode는 false로
-        return { ...proto, editMode: false };
+        return { ...proto, editMode: false }
       }),
-    );
-  };
+    )
+  }
 
   const changeItem = (id: number, type: string, value: string) => {
     setItems((prev: any) =>
       prev.map((item: any) => {
-        if (item.id !== id) return { ...item }; // 항상 복사
+        if (item.id !== id) return { ...item } // 항상 복사
 
-        const updated = { ...item };
-        if (type === 'title') updated.title = value;
-        if (type === 'desc') updated.desc = value;
-        if (type === 'img') updated.img = value;
+        const updated = { ...item }
+        if (type === 'title') updated.title = value
+        if (type === 'desc') updated.desc = value
+        if (type === 'img') updated.img = value
 
-        return updated;
+        return updated
       }),
-    );
-  };
+    )
+  }
 
   const deleteItem = (id: number) => {
-    const temp = [];
+    const temp = []
     for (let i = 0; i < items.length; i++) {
-      if (id !== items[i].id) temp.push(items[i]);
+      if (id !== items[i].id) temp.push(items[i])
     }
-    setItems(temp);
-  };
+    setItems(temp)
+  }
 
   useEffect(() => {
-    getPoll();
-  }, []);
+    getPoll()
+  }, [])
 
   useEffect(() => {
     if (isMounted.current) {
-      setIsLoaded(true);
+      setIsLoaded(true)
     } else {
-      isMounted.current = true;
+      isMounted.current = true
     }
-  }, [items]);
+  }, [items])
 
   return (
     <div className="w-full flex justify-center ism">
@@ -230,7 +237,7 @@ export default function PollEdit() {
         <div className="w-full flex flex-row items-between justify-between pt-2">
           <button
             onClick={() => {
-              router.push(`/poll/${publicId}`);
+              router.push(`/poll/${publicId}`)
             }}
           >
             <MdOutlineKeyboardBackspace className="text-3xl" />
@@ -273,6 +280,7 @@ export default function PollEdit() {
                 min="1"
               ></input>
             </div>
+            <DatePicker pollEndRef={pollEndRef} />
           </div>
           {isLoaded ? (
             <Reorder.Group axis="y" values={items} onReorder={setItems}>
@@ -328,20 +336,41 @@ export default function PollEdit() {
                     </div>
                   )}
 
-                  <div className="w-full flex justify-between mt-2">
-                    {item.editMode ? (
-                      <button onClick={() => cancelEditMode(item.id)}>
+                  {item.editMode ? (
+                    <div className="pt-2 w-full flex justify-between">
+                      <button
+                        onClick={() => {
+                          cancelEditMode(item.id)
+                        }}
+                      >
                         <MdOutlineCancel />
                       </button>
-                    ) : (
-                      <button onClick={() => deleteItem(item.id)}>
+                      <button
+                        onClick={() => {
+                          changeEditMode(item.id)
+                        }}
+                      >
+                        <FaCheck />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-full flex justify-between">
+                      <button
+                        onClick={() => {
+                          deleteItem(item.id)
+                        }}
+                      >
                         <FaRegTrashAlt />
                       </button>
-                    )}
-                    <button onClick={() => changeEditMode(item.id)}>
-                      <LuPencil />
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => {
+                          changeEditMode(item.id)
+                        }}
+                      >
+                        <LuPencil />
+                      </button>
+                    </div>
+                  )}
                 </Reorder.Item>
               ))}
             </Reorder.Group>
@@ -365,5 +394,5 @@ export default function PollEdit() {
         </div>
       </div>
     </div>
-  );
+  )
 }
