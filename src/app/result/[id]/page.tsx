@@ -157,7 +157,7 @@ export default function Result() {
 
           <br />
           {Date.now() >= Number(data.publicId) + Number(data.end) * 60000 ? (
-            <div className="w-72 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md ">
+            <div className="w-72 px-4 py-2 bg-black text-center text-white font-semibold rounded-lg shadow-md ">
               투표마감
             </div>
           ) : (
