@@ -57,7 +57,13 @@ export default function Search() {
                 <button key={poll.id} className="w-full">
                   <div className="flex w-full items-between justify-between px-1">
                     <div className="truncate w-[70%]">{poll.title}</div>
-                    <div className="text-end truncate w-[30%]">{poll.nick}</div>
+                    <div className="text-end truncate w-[30%]">
+                      {JSON.parse(poll.categories).reduce(
+                        (acc: number, cur: any) => acc + cur.percentage,
+                        0,
+                      )}
+                      표
+                    </div>
                   </div>
                 </button>
               );
