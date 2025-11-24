@@ -156,7 +156,11 @@ export default function Result() {
           })}
 
           <br />
-          {localStorage.getItem(`voter:${data.publicId}`) ? null : (
+          {Date.now() >= Number(data.publicId) + Number(data.end) * 60000 ? (
+            <div className="w-72 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md ">
+              투표마감
+            </div>
+          ) : (
             <button
               className="w-72 px-4 py-2 bg-red-800 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 active:scale-95 transition-transform duration-150 ease-out"
               onClick={() => router.push(`/poll/${data.publicId}`)}
