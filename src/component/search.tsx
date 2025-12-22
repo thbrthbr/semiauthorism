@@ -60,7 +60,7 @@ export default function Search() {
                   key={poll.id}
                   className="w-full"
                   onClick={() => {
-                    router.push(`/poll/${poll.postNum}`);
+                    router.push(`/poll/${poll.publicId}`);
                   }}
                 >
                   <div className="flex w-full items-between justify-between px-1">
