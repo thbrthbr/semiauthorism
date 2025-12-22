@@ -1,7 +1,9 @@
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Search() {
   const searchRef = useRef<any>(null);
+  const router = useRouter();
   const [searched, setSearched] = useState<boolean>(false);
   const [polls, setPolls] = useState<any>([]);
 
@@ -54,7 +56,13 @@ export default function Search() {
           {polls.length > 0 ? (
             polls.map((poll: any) => {
               return (
-                <button key={poll.id} className="w-full">
+                <button
+                  key={poll.id}
+                  className="w-full"
+                  onClick={() => {
+                    router.push(`/poll/${poll.postNum}`);
+                  }}
+                >
                   <div className="flex w-full items-between justify-between px-1">
                     <div className="truncate w-[70%]">{poll.title}</div>
                     <div className="text-end truncate w-[30%]">
